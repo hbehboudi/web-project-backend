@@ -7,5 +7,5 @@ urlpatterns = [
 
     url(r'^api/accounts/', include('authentication.accounts.api.urls')),
 
-    url(r'^api/teams/', include('authentication.teams.api.urls')),
+    # url(r'^api/teams/', include('authentication.teams.api.urls')),
 ]
