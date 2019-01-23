@@ -148,7 +148,7 @@ class UserProfile(base_models.TimeStampedModel, Verification):
     ACTIVATED = "ALREADY ACTIVATED"
 
     user = models.OneToOneField(
-        settings.AUTH_USER_MODEL
+        settings.AUTH_USER_MODEL, on_delete=models.DO_NOTHING
     )
 
     verification_key = models.CharField(
