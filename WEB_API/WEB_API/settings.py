@@ -43,6 +43,8 @@ INSTALLED_APPS = [
 
     'news',
     'home_page',
+    'leagues',
+    'team',
 ]
 
 MIDDLEWARE = [
