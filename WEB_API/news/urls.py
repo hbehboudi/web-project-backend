@@ -2,8 +2,9 @@ from django.conf.urls import url, include
 from django.contrib import admin
 from django.urls import path
 
-from news import views
+from news.views import FootballNewsList, BasketballNewsList
 
 urlpatterns = [
-    path('', views.NewsList.as_view()),
+    path('football/', FootballNewsList.as_view()),
+    path('basketball/', BasketballNewsList.as_view()),
 ]

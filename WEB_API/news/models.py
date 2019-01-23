@@ -33,4 +33,4 @@ class News(models.Model):
 
     class Meta:
         verbose_name = 'News'
-        ordering = ('created_date_time', 'title')
+        ordering = ('-created_date_time', 'title')
