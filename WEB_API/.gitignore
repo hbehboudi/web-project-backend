@@ -6,3 +6,5 @@
 local_settings.py
 sftp-config.json
 db.sqlite3
+.env
+env/

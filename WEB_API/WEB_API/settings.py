@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'authentication.teams',
     'corsheaders',
 
+    'news',
 ]
 
 MIDDLEWARE = [
@@ -133,8 +134,6 @@ VERIFICATION_KEY_EXPIRY_DAYS = 2
 SITE_NAME = "WEB API"
 
 CORS_ORIGIN_WHITELIST = 'localhost:3000'
-
-
 CORS_ORIGIN_ALLOW_ALL = False
 
 try:
