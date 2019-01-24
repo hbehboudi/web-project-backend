@@ -22,3 +22,4 @@ class Tag(models.Model):
     class Meta:
         verbose_name = 'تگ'
         ordering = ('-created_date_time', 'name')
+        verbose_name_plural = 'تگ ها'

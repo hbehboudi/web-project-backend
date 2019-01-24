@@ -28,4 +28,5 @@ class News(models.Model):
 
     class Meta:
         verbose_name = 'خبر'
+        verbose_name_plural = 'اخبار'
         ordering = ('-created_date_time', 'title')

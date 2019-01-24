@@ -33,6 +33,7 @@ class Team(models.Model):
     class Meta:
         ordering = ('-created_date_time', 'name')
         verbose_name = 'تیم'
+        verbose_name_plural = 'تیم ها'
 
 
 class TeamSliderImage(models.Model):
@@ -48,3 +49,4 @@ class TeamSliderImage(models.Model):
     class Meta:
         verbose_name = 'تصویر اسلایدر تیم'
         ordering = ('-created_date_time', 'title')
+        verbose_name_plural = 'تصاویر اسلایدر تیم ها'

@@ -34,6 +34,7 @@ class League(models.Model):
     class Meta:
         ordering = ('-created_date_time', 'name')
         verbose_name = 'لیگ'
+        verbose_name_plural = 'لیگ ها'
 
 
 class LeagueSliderImage(models.Model):
@@ -49,3 +50,4 @@ class LeagueSliderImage(models.Model):
     class Meta:
         verbose_name = 'تصویر اسلایدر لیگ'
         ordering = ('-created_date_time', 'title')
+        verbose_name_plural = 'تصاویر اسلایدر لیگ'

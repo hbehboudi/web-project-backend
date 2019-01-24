@@ -20,5 +20,6 @@ class SliderImage(models.Model):
         return self.title
 
     class Meta:
-        verbose_name = 'Slider Image'
+        verbose_name = 'تصویر اسلایدر اصلی'
+        verbose_name_plural = 'تصاویر اسلایدر اصلی'
         ordering = ('-created_date_time', 'title')

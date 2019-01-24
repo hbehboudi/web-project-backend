@@ -56,6 +56,7 @@ class Player(models.Model):
     class Meta:
         ordering = ('-created_date_time', 'name')
         verbose_name = 'بازیکن'
+        verbose_name_plural = 'بازیکنان'
 
 
 class PlayerSliderImage(models.Model):
@@ -71,3 +72,4 @@ class PlayerSliderImage(models.Model):
     class Meta:
         verbose_name = 'تصویر اسلایدر بازیکن'
         ordering = ('-created_date_time', 'title')
+        verbose_name_plural = 'تصاویر اسلایدر بازیکن'
