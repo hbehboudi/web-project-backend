@@ -1,6 +1,7 @@
 import uuid
 
 from django.db import models
+from django.utils.text import slugify
 
 from news.models import News
 from tag.models import Tag
@@ -15,16 +16,16 @@ class League(models.Model):
     name = models.CharField(max_length=64, verbose_name='نام لیگ')
     year = models.IntegerField(verbose_name='سال')
     confederation = models.CharField(max_length=32, verbose_name='کنفدراسیون')
-    country = models.CharField(max_length=32, blank=True, verbose_name='کشور', help_text='اجباری نیست.')
-    level = models.IntegerField(blank=True, verbose_name='دسته')
+    country = models.CharField(max_length=32, blank=True, null=True, verbose_name='کشور', help_text='اجباری نیست.')
+    level = models.IntegerField(blank=True, null=True, verbose_name='دسته')
     numberOfTeams = models.IntegerField(verbose_name='تعداد تیم ها')
-    bestTeam = models.CharField(max_length=32, blank=True, verbose_name='بهترین تیم')
+    bestTeam = models.CharField(max_length=32, blank=True, null=True, verbose_name='بهترین تیم')
     establishedYear = models.IntegerField(verbose_name='سال تاسیس')
     website = models.URLField(verbose_name='وب سایت')
     created_date_time = models.DateTimeField(verbose_name='زمان ساخت')
-    image_url = models.URLField(null=False, blank=True, verbose_name='آدرس تصویر لیگ')
+    image_url = models.URLField(verbose_name='آدرس تصویر لیگ')
     field = models.CharField(max_length=3, choices=FIELDS, default='OTH', verbose_name='ورزش')
-    url = models.UUIDField(default=uuid.uuid4, db_index=True, unique=True, editable=False, auto_created=True)
+    slug = models.SlugField(unique=True)
     tags = models.ManyToManyField(Tag, blank=True, verbose_name='تگ ها')
     deleted = models.BooleanField(default=False, verbose_name='حذف شده')
 
@@ -35,6 +36,11 @@ class League(models.Model):
         ordering = ('-created_date_time', 'name')
         verbose_name = 'لیگ'
         verbose_name_plural = 'لیگ ها'
+        unique_together = ('name', 'year',)
+
+    def save(self, *args, **kwargs):
+        self.slug = slugify(self.name)
+        super(League, self).save(*args, **kwargs)
 
 
 class LeagueSliderImage(models.Model):

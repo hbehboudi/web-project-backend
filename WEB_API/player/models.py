@@ -1,6 +1,7 @@
 import uuid
 
 from django.db import models
+from django.utils.text import slugify
 
 from news.models import Tag
 
@@ -31,7 +32,6 @@ class Player(models.Model):
     )
 
     name = models.CharField(max_length=64, verbose_name='نام')
-    nickname = models.CharField(max_length=64, verbose_name='لقب')
     post = models.CharField(choices=POSITIONS, max_length=3, verbose_name='پست')
     nationality = models.CharField(max_length=64, verbose_name='ملیت')
     team = models.CharField(max_length=64, verbose_name='باشگاه')
@@ -42,11 +42,10 @@ class Player(models.Model):
     teamNum = models.IntegerField(verbose_name='شماره پیراهن در باشگاه')
     nationalityTeamNum = models.IntegerField(verbose_name='شماره پیراهن در تیم ملی')
     website = models.URLField(verbose_name='وب سایت')
-
+    slug = models.SlugField(unique=True)
     created_date_time = models.DateTimeField(verbose_name='زمان ساخت')
-    image_url = models.URLField(null=False, blank=True, verbose_name='آدرس تصویر لیگ')
+    image_url = models.URLField(blank=True, verbose_name='آدرس تصویر لیگ')
     field = models.CharField(max_length=3, choices=FIELDS, default='OTH', verbose_name='ورزش')
-    url = models.UUIDField(default=uuid.uuid4, db_index=True, unique=True, editable=False, auto_created=True)
     tags = models.ManyToManyField(Tag, blank=True, verbose_name='تگ ها')
     deleted = models.BooleanField(default=False, verbose_name='حذف شده')
 
@@ -57,6 +56,10 @@ class Player(models.Model):
         ordering = ('-created_date_time', 'name')
         verbose_name = 'بازیکن'
         verbose_name_plural = 'بازیکنان'
+
+    def save(self, *args, **kwargs):
+        self.slug = slugify(self.name)
+        super(Player, self).save(*args, **kwargs)
 
 
 class PlayerSliderImage(models.Model):

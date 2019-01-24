@@ -5,11 +5,6 @@ from team.models import Team
 
 
 class TeamLeague(models.Model):
-    FIELDS = (
-        ('FTB', 'Football'),
-        ('BSK', 'Basketball'),
-    )
-
     team = models.ForeignKey(Team, on_delete=True, verbose_name='تیم')
     league = models.ForeignKey(League, on_delete=True, verbose_name='لیگ')
     created_date_time = models.DateTimeField(verbose_name='زمان ساخت')

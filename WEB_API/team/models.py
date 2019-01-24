@@ -1,6 +1,7 @@
 import uuid
 
 from django.db import models
+from django.utils.text import slugify
 
 from news.models import Tag
 
@@ -11,7 +12,7 @@ class Team(models.Model):
         ('BSK', 'Basketball'),
     )
 
-    name = models.CharField(max_length=64, verbose_name='نام تیم')
+    name = models.CharField(max_length=64, unique=True, verbose_name='نام تیم')
     nickname = models.CharField(max_length=64, verbose_name='لقب تیم')
     internatinalRank = models.IntegerField(verbose_name='رتبه جهانی')
     city = models.CharField(max_length=32, blank=True, verbose_name='شهر')
@@ -23,7 +24,7 @@ class Team(models.Model):
     created_date_time = models.DateTimeField(verbose_name='زمان ساخت')
     image_url = models.URLField(null=False, blank=True, verbose_name='آدرس تصویر لیگ')
     field = models.CharField(max_length=3, choices=FIELDS, default='OTH', verbose_name='ورزش')
-    url = models.UUIDField(default=uuid.uuid4, db_index=True, unique=True, editable=False, auto_created=True)
+    slug = models.SlugField(unique=True)
     tags = models.ManyToManyField(Tag, blank=True, verbose_name='تگ ها')
     deleted = models.BooleanField(default=False, verbose_name='حذف شده')
 
@@ -34,6 +35,10 @@ class Team(models.Model):
         ordering = ('-created_date_time', 'name')
         verbose_name = 'تیم'
         verbose_name_plural = 'تیم ها'
+
+    def save(self, *args, **kwargs):
+        self.slug = slugify(self.name)
+        super(Team, self).save(*args, **kwargs)
 
 
 class TeamSliderImage(models.Model):

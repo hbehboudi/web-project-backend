@@ -13,5 +13,5 @@ urlpatterns = [
     # url(r'^api/teams/', include('authentication.teams.api.urls')),
 
     path('api/news/', include('news.urls')),
-    path('api/home/', include('home_page.urls')),
+    path('api/home/', include('Slider.urls')),
 ]

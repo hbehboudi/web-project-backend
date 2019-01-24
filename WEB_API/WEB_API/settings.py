@@ -42,12 +42,13 @@ INSTALLED_APPS = [
     'corsheaders',
 
     'news',
-    'home_page',
+    'Slider',
     'leagues',
     'team',
     'tag',
     'player',
-    'teamInLeague',
+    'team_in_league',
+    'player_in_team',
 ]
 
 MIDDLEWARE = [

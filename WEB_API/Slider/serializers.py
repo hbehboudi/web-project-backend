@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from home_page.models import SliderImage
+from Slider.models import SliderImage
 
 
 class SliderImageSerializer(serializers.ModelSerializer):
