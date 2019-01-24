@@ -40,7 +40,7 @@ class TeamSliderImage(models.Model):
     created_date_time = models.DateTimeField(verbose_name='زمان ساخت')
     image_url = models.URLField(null=False, blank=True, verbose_name='آدرس تصویر')
     deleted = models.BooleanField(default=False, verbose_name='حذف شده')
-    team = models.ForeignKey(Team, verbose_name='لیگ', on_delete=models.CASCADE)
+    team = models.ForeignKey(Team, verbose_name='تیم', on_delete=models.CASCADE)
 
     def __str__(self):
         return self.title

@@ -2,7 +2,8 @@ import uuid
 
 from django.db import models
 
-from news.models import Tag
+from news.models import News
+from tag.models import Tag
 
 
 class League(models.Model):

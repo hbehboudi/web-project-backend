@@ -2,6 +2,8 @@ import uuid
 
 from django.db import models
 
+from tag.models import Tag
+
 
 class News(models.Model):
     FIELDS = (

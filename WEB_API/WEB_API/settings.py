@@ -45,6 +45,8 @@ INSTALLED_APPS = [
     'home_page',
     'leagues',
     'team',
+    'tag',
+    'player',
 ]
 
 MIDDLEWARE = [
