@@ -42,16 +42,17 @@ class Game(models.Model):
     field = models.CharField(max_length=3, choices=FIELDS, default='OTH', verbose_name='ورزش')
     tags = models.ManyToManyField(Tag, blank=True, verbose_name='تگ ها')
     created_date_time = models.DateTimeField(verbose_name='زمان ساخت')
-    slug = models.SlugField(unique=True, blank=True, allow_unicode=True)
+    slug = models.SlugField(unique=True, blank=True, allow_unicode=True, max_length=255)
     deleted = models.BooleanField(default=False, verbose_name='حذف شده')
 
     def __str__(self):
-        return "{}-{} ({})".format(self.team1, self.team2, self.league)
+        return "{}-{} ({})_{}".format(self.team1, self.team2, self.league, self.game_date)
 
     class Meta:
         ordering = ('-created_date_time', 'team1', 'team2', 'league')
         verbose_name = 'بازی'
         verbose_name_plural = 'بازی ها'
+        unique_together = ('team1', 'team2', 'league', 'game_date')
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.__str__(), allow_unicode=True)
@@ -61,7 +62,7 @@ class Game(models.Model):
 class GameSliderImage(models.Model):
     title = models.CharField(max_length=127, verbose_name='عنوان')
     image_url = models.URLField(null=False, verbose_name='آدرس تصویر')
-    game = models.ForeignKey(Team, verbose_name='بازی', on_delete=models.CASCADE)
+    game = models.ForeignKey(Game, verbose_name='بازی', on_delete=models.CASCADE)
 
     created_date_time = models.DateTimeField(verbose_name='زمان ساخت')
     deleted = models.BooleanField(default=False, verbose_name='حذف شده')
@@ -73,3 +74,23 @@ class GameSliderImage(models.Model):
         verbose_name = 'تصویر اسلایدر بازی'
         ordering = ('-created_date_time', 'title')
         verbose_name_plural = 'تصاویر اسلایدر بازی ها'
+
+
+class GameReport(models.Model):
+    title = models.CharField(unique=True, max_length=127, verbose_name='عنوان')
+    image_url = models.URLField(verbose_name='آدرس تصویر')
+    game = models.ForeignKey(Game, on_delete=True, verbose_name='بازی')
+    minute = models.IntegerField(verbose_name='دقیقه')
+    second = models.IntegerField(verbose_name='ثانیه')
+
+    created_date_time = models.DateTimeField(verbose_name='زمان ساخت')
+    deleted = models.BooleanField(default=False, verbose_name='حذف شده')
+
+    def __str__(self):
+        return "{}({})".format(self.title, self.game)
+
+    class Meta:
+        verbose_name = 'گزارش بازی‌'
+        verbose_name_plural = 'گزارشات بازی'
+        ordering = ('-created_date_time', 'title',)
+        unique_together = ('title', 'game')
