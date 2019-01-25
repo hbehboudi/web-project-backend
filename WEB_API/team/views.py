@@ -1,4 +1,5 @@
 import slug as slug
+from django.http import Http404
 from rest_framework import generics, viewsets
 from rest_framework.decorators import api_view
 from rest_framework.generics import get_object_or_404
@@ -24,12 +25,11 @@ class MemberListAPIView(generics.ListAPIView):
 
 
 @api_view()
-def memberList(request, slug):
-    team = Team.objects.filter(slug__contains=slug)[0]
-    playerTeam = PlayerTeam.objects.filter(team=team, active=True).values('player__name', 'player__post')
-    return Response(playerTeam)
-
-
+def memberList(request, teamSlug):
+    team = Team.objects.filter(slug__contains=teamSlug, deleted=False)[0]
+    members = PlayerTeam.objects.filter(teamLeague__team=team, teamLeague__active=True).values('player__name',
+                                                                                               'player__post')
+    return Response(members)
 
 #
 # def user_home(request):

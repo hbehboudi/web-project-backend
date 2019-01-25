@@ -143,9 +143,10 @@ SITE_NAME = "WEB API"
 CORS_ORIGIN_WHITELIST = 'localhost:3000'
 CORS_ORIGIN_ALLOW_ALL = False
 
+ALLOW_UNICODE_SLUGS = True
+
 try:
     from local_settings import *
 except ImportError:
     pass
 
-ALLOW_UNICODE_SLUGS = True

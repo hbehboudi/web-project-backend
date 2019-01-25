@@ -10,7 +10,7 @@ class Tag(models.Model):
         ('OTH', 'Other'),
     )
 
-    title = models.CharField(max_length=63, verbose_name='نام تگ')
+    title = models.CharField(max_length=63, verbose_name='نام تگ', unique=True)
     text = models.TextField(blank=True, verbose_name='درباره ی تگ')
 
     created_date_time = models.DateTimeField(verbose_name='زمان ساخت')

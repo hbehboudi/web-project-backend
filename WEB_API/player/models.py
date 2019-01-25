@@ -43,7 +43,7 @@ class Player(models.Model):
     nationalityTeamNum = models.IntegerField(verbose_name='شماره پیراهن در تیم ملی', blank=True)
     website = models.URLField(verbose_name='وب سایت', blank=True)
     image_url = models.URLField(verbose_name='آدرس تصویر بازیکن')
-    slug = models.SlugField(unique=True, blank=True)
+    slug = models.SlugField(unique=True, blank=True, allow_unicode=True)
 
     created_date_time = models.DateTimeField(verbose_name='زمان ساخت')
     field = models.CharField(max_length=3, choices=FIELDS, default='OTH', verbose_name='ورزش')

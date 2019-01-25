@@ -24,7 +24,7 @@ class Team(models.Model):
     tags = models.ManyToManyField(Tag, blank=True, verbose_name='تگ ها')
 
     created_date_time = models.DateTimeField(verbose_name='زمان ساخت')
-    slug = models.SlugField(unique=True)
+    slug = models.SlugField(unique=True, blank=True, allow_unicode=True)
     deleted = models.BooleanField(default=False, verbose_name='حذف شده')
 
     def __str__(self):
