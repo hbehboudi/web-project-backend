@@ -10,11 +10,12 @@ class SliderImage(models.Model):
         ('OTH', 'Other'),
     )
 
-    title = models.CharField(max_length=128)
-    created_date_time = models.DateTimeField()
-    image_url = models.URLField(null=False, blank=True)
-    field = models.CharField(max_length=3, choices=FIELDS, default='OTH')
-    deleted = models.BooleanField(default=False)
+    title = models.CharField(max_length=127, verbose_name='عنوان')
+    image_url = models.URLField(verbose_name='آدرس تصویر')
+
+    created_date_time = models.DateTimeField(verbose_name='زمان ساخت')
+    field = models.CharField(max_length=3, choices=FIELDS, default='OTH', verbose_name='ورزش')
+    deleted = models.BooleanField(default=False, verbose_name='حذف شده')
 
     def __str__(self):
         return self.title

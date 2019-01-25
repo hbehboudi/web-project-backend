@@ -147,3 +147,5 @@ try:
     from local_settings import *
 except ImportError:
     pass
+
+ALLOW_UNICODE_SLUGS = True

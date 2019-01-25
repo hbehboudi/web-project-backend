@@ -1,5 +1,3 @@
-import uuid
-
 from django.db import models
 from django.utils.text import slugify
 
@@ -12,20 +10,21 @@ class Team(models.Model):
         ('BSK', 'Basketball'),
     )
 
-    name = models.CharField(max_length=64, unique=True, verbose_name='نام تیم')
-    nickname = models.CharField(max_length=64, verbose_name='لقب تیم')
-    internatinalRank = models.IntegerField(verbose_name='رتبه جهانی')
-    city = models.CharField(max_length=32, blank=True, verbose_name='شهر')
-    country = models.CharField(max_length=32, blank=True, verbose_name='کشور', help_text='اجباری نیست.')
-    establishedYear = models.IntegerField(verbose_name='سال تاسیس')
-    coach = models.CharField(max_length=32, verbose_name='سرمربی')
-    captain = models.CharField(max_length=32, verbose_name='کاپیتان')
+    name = models.CharField(max_length=63, unique=True, verbose_name='نام تیم')
+    nickname = models.CharField(max_length=63, blank=True, verbose_name='لقب تیم')
+    internatinalRank = models.IntegerField(blank=True, verbose_name='رتبه جهانی')
+    city = models.CharField(max_length=31, blank=True, verbose_name='شهر')
+    country = models.CharField(max_length=31, blank=True, verbose_name='کشور')
+    establishedYear = models.IntegerField(verbose_name='سال تاسیس', blank=True)
+    coach = models.CharField(max_length=63, verbose_name='سرمربی')
+    captain = models.CharField(max_length=63, verbose_name='کاپیتان')
     website = models.URLField(verbose_name='وب سایت')
-    created_date_time = models.DateTimeField(verbose_name='زمان ساخت')
-    image_url = models.URLField(null=False, blank=True, verbose_name='آدرس تصویر لیگ')
+    image_url = models.URLField(null=False, verbose_name='آدرس تصویر لیگ')
     field = models.CharField(max_length=3, choices=FIELDS, default='OTH', verbose_name='ورزش')
-    slug = models.SlugField(unique=True)
     tags = models.ManyToManyField(Tag, blank=True, verbose_name='تگ ها')
+
+    created_date_time = models.DateTimeField(verbose_name='زمان ساخت')
+    slug = models.SlugField(unique=True)
     deleted = models.BooleanField(default=False, verbose_name='حذف شده')
 
     def __str__(self):
@@ -37,16 +36,17 @@ class Team(models.Model):
         verbose_name_plural = 'تیم ها'
 
     def save(self, *args, **kwargs):
-        self.slug = slugify(self.name)
+        self.slug = slugify(self.__str__(), allow_unicode=True)
         super(Team, self).save(*args, **kwargs)
 
 
 class TeamSliderImage(models.Model):
-    title = models.CharField(max_length=128, verbose_name='عنوان')
-    created_date_time = models.DateTimeField(verbose_name='زمان ساخت')
-    image_url = models.URLField(null=False, blank=True, verbose_name='آدرس تصویر')
-    deleted = models.BooleanField(default=False, verbose_name='حذف شده')
+    title = models.CharField(max_length=127, verbose_name='عنوان')
+    image_url = models.URLField(null=False, verbose_name='آدرس تصویر')
     team = models.ForeignKey(Team, verbose_name='تیم', on_delete=models.CASCADE)
+
+    created_date_time = models.DateTimeField(verbose_name='زمان ساخت')
+    deleted = models.BooleanField(default=False, verbose_name='حذف شده')
 
     def __str__(self):
         return self.title

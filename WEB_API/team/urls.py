@@ -1,10 +1,15 @@
-from django.conf.urls import url, include
-from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
 
-from news.views import FootballNewsList, BasketballNewsList
+from . import views
+
+# router = DefaultRouter()
+# router.register(r'', views.TeamViewSet)
+#
+# urlpatterns = [
+#     path('', include(router.urls)),
+# ]
 
 urlpatterns = [
-    path('football/', FootballNewsList.as_view()),
-    path('basketball/', BasketballNewsList.as_view()),
+    path('<str:slug>/', views.memberList),
 ]
