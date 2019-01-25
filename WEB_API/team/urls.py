@@ -11,6 +11,6 @@ from . import views
 # ]
 
 urlpatterns = [
-    path('<str:teamSlug>/members/', views.memberList),
-    path('<str:teamSlug>/news/', views.newsList),
+    path('<str:team_slug>/members/', views.memberList),
+    path('<str:team_slug>/news/', views.newsList),
 ]
