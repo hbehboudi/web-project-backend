@@ -5,8 +5,10 @@ from rest_framework.decorators import api_view
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 
+from news.models import News
 from player.models import Player
 from player_in_team.models import PlayerTeam
+from tag.models import Tag
 from team.models import Team
 from team.serializers import TeamSerializer, MemberSerializer
 
@@ -26,12 +28,26 @@ class MemberListAPIView(generics.ListAPIView):
 
 @api_view()
 def memberList(request, teamSlug):
-    team = Team.objects.filter(slug__contains=teamSlug, deleted=False)[0]
-    members = PlayerTeam.objects.filter(teamLeague__team=team, teamLeague__active=True).values('player__name',
-                                                                                               'player__post')
-    return Response(members)
+    try:
+        team = Team.objects.filter(slug__contains=teamSlug, deleted=False)[0]
+        members = PlayerTeam.objects.filter(teamLeague__team=team, teamLeague__active=True, deleted=False).values(
+            'player__name', 'player__post', 'player__image_url', 'player__slug')
+        return Response(members)
+    except IndexError:
+        return Response({})
 
-#
+
+@api_view()
+def newsList(request, teamSlug):
+    try:
+        team = Team.objects.filter(slug__contains=teamSlug, deleted=False)[0]
+        tagTitles = team.tags.values_list('title')
+        news = News.objects.filter(tags__title__in=tagTitles, deleted=False)
+        return Response(news.values('title', 'category', 'image_url', 'field', 'created_date_time', 'slug'))
+    except IndexError:
+        return Response({})
+
+
 # def user_home(request):
 #     p = request.GET.get('p')
 #     user = request.user
