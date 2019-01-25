@@ -1,3 +1,75 @@
 from django.db import models
 
-# Create your models here.
+from django.db import models
+from django.utils.text import slugify
+
+from leagues.models import League
+from news.models import Tag
+from team.models import Team
+
+
+class Game(models.Model):
+    FIELDS = (
+        ('FTB', 'Football'),
+        ('BSK', 'Basketball'),
+    )
+
+    team1 = models.ForeignKey(Team, on_delete=True, verbose_name='تیم۱', related_name='host')
+    team2 = models.ForeignKey(Team, on_delete=True, verbose_name='تیم۲', related_name='guest')
+    league = models.ForeignKey(League, on_delete=True, verbose_name='لیگ')
+
+    goals1 = models.IntegerField(verbose_name='گل های تیم ۱')
+    goals2 = models.IntegerField(verbose_name='گل های تیم ۲')
+    shots1 = models.IntegerField(verbose_name='شوت های تیم ۱')
+    shots2 = models.IntegerField(verbose_name='شوت های تیم ۲')
+    shots_on_target1 = models.IntegerField(verbose_name='شوت های داخل چارچوب تیم ۱')
+    shots_on_target2 = models.IntegerField(verbose_name='شوت های داخل چارچوب تیم ۲')
+    possession1 = models.IntegerField(verbose_name='مالکیت توپ تیم ۱')
+    possession2 = models.IntegerField(verbose_name='مالکیت توپ تیم ۲')
+    passes1 = models.IntegerField(verbose_name='پاس های تیم ۱')
+    passes2 = models.IntegerField(verbose_name='پاس های تیم ۲')
+    fouls1 = models.IntegerField(verbose_name='خطا های تیم۱')
+    fouls2 = models.IntegerField(verbose_name='خطا های تیم۱')
+    yellow_cards1 = models.IntegerField(verbose_name='کارت زرد های تیم ۱')
+    yellow_cards2 = models.IntegerField(verbose_name='کارت زرد های تیم ۲')
+    red_cards1 = models.IntegerField(verbose_name='کارت قرمز های تیم ۱')
+    red_cards2 = models.IntegerField(verbose_name='کارت قرمز های تیم ۲')
+    offsides1 = models.IntegerField(verbose_name='آفساید های تیم ۱')
+    offsides2 = models.IntegerField(verbose_name='آفساید های تیم ۲')
+    corners1 = models.IntegerField(verbose_name='کرنر های تیم ۱')
+    corners2 = models.IntegerField(verbose_name='کرنر های تیم ۲')
+    game_date = models.DateTimeField(verbose_name='تاریخ و ساعت بازی')
+    field = models.CharField(max_length=3, choices=FIELDS, default='OTH', verbose_name='ورزش')
+    tags = models.ManyToManyField(Tag, blank=True, verbose_name='تگ ها')
+    created_date_time = models.DateTimeField(verbose_name='زمان ساخت')
+    slug = models.SlugField(unique=True, blank=True, allow_unicode=True)
+    deleted = models.BooleanField(default=False, verbose_name='حذف شده')
+
+    def __str__(self):
+        return "{}-{} ({})".format(self.team1, self.team2, self.league)
+
+    class Meta:
+        ordering = ('-created_date_time', 'team1', 'team2', 'league')
+        verbose_name = 'بازی'
+        verbose_name_plural = 'بازی ها'
+
+    def save(self, *args, **kwargs):
+        self.slug = slugify(self.__str__(), allow_unicode=True)
+        super(Game, self).save(*args, **kwargs)
+
+
+class GameSliderImage(models.Model):
+    title = models.CharField(max_length=127, verbose_name='عنوان')
+    image_url = models.URLField(null=False, verbose_name='آدرس تصویر')
+    game = models.ForeignKey(Team, verbose_name='بازی', on_delete=models.CASCADE)
+
+    created_date_time = models.DateTimeField(verbose_name='زمان ساخت')
+    deleted = models.BooleanField(default=False, verbose_name='حذف شده')
+
+    def __str__(self):
+        return self.title
+
+    class Meta:
+        verbose_name = 'تصویر اسلایدر بازی'
+        ordering = ('-created_date_time', 'title')
+        verbose_name_plural = 'تصاویر اسلایدر بازی ها'

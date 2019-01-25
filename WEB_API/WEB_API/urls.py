@@ -15,4 +15,6 @@ urlpatterns = [
     path('api/news/', include('news.urls')),
     path('api/home/', include('Slider.urls')),
     path('api/team/', include('team.urls')),
+    path('api/game/', include('game.urls')),
+
 ]
