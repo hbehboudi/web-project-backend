@@ -1,10 +1,12 @@
 from django.db import models
 
 from django.db import models
+from django.db.models import CASCADE
 from django.utils.text import slugify
 
 from leagues.models import League
 from news.models import Tag
+from player.models import Player
 from team.models import Team
 
 
@@ -14,9 +16,9 @@ class Game(models.Model):
         ('BSK', 'Basketball'),
     )
 
-    team1 = models.ForeignKey(Team, on_delete=True, verbose_name='تیم۱', related_name='host')
-    team2 = models.ForeignKey(Team, on_delete=True, verbose_name='تیم۲', related_name='guest')
-    league = models.ForeignKey(League, on_delete=True, verbose_name='لیگ')
+    team1 = models.ForeignKey(Team, on_delete=CASCADE, verbose_name='تیم۱', related_name='host')
+    team2 = models.ForeignKey(Team, on_delete=CASCADE, verbose_name='تیم۲', related_name='guest')
+    league = models.ForeignKey(League, on_delete=CASCADE, verbose_name='لیگ')
 
     goals1 = models.IntegerField(verbose_name='گل های تیم ۱')
     goals2 = models.IntegerField(verbose_name='گل های تیم ۲')
@@ -79,7 +81,7 @@ class GameSliderImage(models.Model):
 class GameReport(models.Model):
     title = models.CharField(unique=True, max_length=127, verbose_name='عنوان')
     image_url = models.URLField(verbose_name='آدرس تصویر')
-    game = models.ForeignKey(Game, on_delete=True, verbose_name='بازی')
+    game = models.ForeignKey(Game, on_delete=CASCADE, verbose_name='بازی')
     minute = models.IntegerField(verbose_name='دقیقه')
     second = models.IntegerField(verbose_name='ثانیه')
 
@@ -94,3 +96,98 @@ class GameReport(models.Model):
         verbose_name_plural = 'گزارشات بازی'
         ordering = ('-created_date_time', 'title',)
         unique_together = ('title', 'game')
+
+
+class Goal(models.Model):
+    player = models.ForeignKey(Player, on_delete=CASCADE, verbose_name='بازیکن')
+    game = models.ForeignKey(Game, on_delete=CASCADE, verbose_name='بازی')
+    team = models.ForeignKey(Team, on_delete=CASCADE, verbose_name='تیم')
+    minute = models.IntegerField(verbose_name='دقیقه')
+    second = models.IntegerField(verbose_name='ثانیه')
+
+    created_date_time = models.DateTimeField(verbose_name='زمان ساخت')
+    deleted = models.BooleanField(default=False, verbose_name='حذف شده')
+
+    def __str__(self):
+        return "{} {}".format(self.player, self.game)
+
+    class Meta:
+        verbose_name = 'گل'
+        verbose_name_plural = 'گل ها'
+        ordering = ('-created_date_time', 'game',)
+
+
+class PenaltyGoal(models.Model):
+    player = models.ForeignKey(Player, on_delete=CASCADE, verbose_name='بازیکن')
+    game = models.ForeignKey(Game, on_delete=CASCADE, verbose_name='بازی')
+    team = models.ForeignKey(Team, on_delete=CASCADE, verbose_name='تیم')
+    minute = models.IntegerField(verbose_name='دقیقه')
+    second = models.IntegerField(verbose_name='ثانیه')
+
+    created_date_time = models.DateTimeField(verbose_name='زمان ساخت')
+    deleted = models.BooleanField(default=False, verbose_name='حذف شده')
+
+    def __str__(self):
+        return "{} {}".format(self.player, self.game)
+
+    class Meta:
+        verbose_name = 'گل پنالتی'
+        verbose_name_plural = 'گل های پنالتی'
+        ordering = ('-created_date_time', 'game',)
+
+
+class YellowCard(models.Model):
+    player = models.ForeignKey(Player, on_delete=CASCADE, verbose_name='بازیکن')
+    game = models.ForeignKey(Game, on_delete=CASCADE, verbose_name='بازی')
+    team = models.ForeignKey(Team, on_delete=CASCADE, verbose_name='تیم')
+    minute = models.IntegerField(verbose_name='دقیقه')
+    second = models.IntegerField(verbose_name='ثانیه')
+
+    created_date_time = models.DateTimeField(verbose_name='زمان ساخت')
+    deleted = models.BooleanField(default=False, verbose_name='حذف شده')
+
+    def __str__(self):
+        return "{} {}".format(self.player, self.game)
+
+    class Meta:
+        verbose_name = 'کارت زرد‌'
+        verbose_name_plural = 'کارت های زرد'
+        ordering = ('-created_date_time', 'game',)
+
+
+class RedCard(models.Model):
+    player = models.ForeignKey(Player, on_delete=CASCADE, verbose_name='بازیکن')
+    game = models.ForeignKey(Game, on_delete=CASCADE, verbose_name='بازی')
+    team = models.ForeignKey(Team, on_delete=CASCADE, verbose_name='تیم')
+    minute = models.IntegerField(verbose_name='دقیقه')
+    second = models.IntegerField(verbose_name='ثانیه')
+
+    created_date_time = models.DateTimeField(verbose_name='زمان ساخت')
+    deleted = models.BooleanField(default=False, verbose_name='حذف شده')
+
+    def __str__(self):
+        return "{} {}".format(self.player, self.game)
+
+    class Meta:
+        verbose_name = 'کارت قرمز'
+        verbose_name_plural = 'کارت های قرمز'
+        ordering = ('-created_date_time', 'game',)
+
+
+class AssistGoal(models.Model):
+    player = models.ForeignKey(Player, on_delete=CASCADE, verbose_name='بازیکن')
+    game = models.ForeignKey(Game, on_delete=CASCADE, verbose_name='بازی')
+    team = models.ForeignKey(Team, on_delete=CASCADE, verbose_name='تیم')
+    minute = models.IntegerField(verbose_name='دقیقه')
+    second = models.IntegerField(verbose_name='ثانیه')
+
+    created_date_time = models.DateTimeField(verbose_name='زمان ساخت')
+    deleted = models.BooleanField(default=False, verbose_name='حذف شده')
+
+    def __str__(self):
+        return "{} {}".format(self.player, self.game)
+
+    class Meta:
+        verbose_name = 'پاس گل'
+        verbose_name_plural = 'پاس های گل'
+        ordering = ('-created_date_time', 'game',)

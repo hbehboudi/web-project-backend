@@ -2,8 +2,8 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
 from news.models import News
-from player_in_team.models import PlayerTeam
 from team.models import Team
+from membership.models import PlayerTeam
 
 
 @api_view()

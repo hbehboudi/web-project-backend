@@ -7,7 +7,7 @@ from news.models import News
 
 
 @api_view()
-def state(request, game_slug):
+def info(request, game_slug):
     try:
         game = Game.objects.filter(slug__contains=game_slug, deleted=False)
         game_state = game.values('team1__name', 'team2__name', 'team1__slug', 'team2__slug', 'team1__image_url',

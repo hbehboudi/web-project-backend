@@ -47,8 +47,7 @@ INSTALLED_APPS = [
     'team',
     'tag',
     'player',
-    'team_in_league',
-    'player_in_team',
+    'membership',
     'game',
 ]
 
