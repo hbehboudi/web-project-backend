@@ -12,7 +12,7 @@ class Team(models.Model):
 
     name = models.CharField(max_length=63, unique=True, verbose_name='نام تیم')
     nickname = models.CharField(max_length=63, blank=True, verbose_name='لقب تیم')
-    internatinalRank = models.IntegerField(blank=True, verbose_name='رتبه جهانی')
+    internationalRank = models.IntegerField(blank=True, verbose_name='رتبه جهانی')
     city = models.CharField(max_length=31, blank=True, verbose_name='شهر')
     country = models.CharField(max_length=31, blank=True, verbose_name='کشور')
     establishedYear = models.IntegerField(verbose_name='سال تاسیس', blank=True)
