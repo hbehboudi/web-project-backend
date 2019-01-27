@@ -181,7 +181,7 @@ class RedCard(models.Model):
 
 class AssistGoal(models.Model):
     player = models.ForeignKey(Player, on_delete=CASCADE, verbose_name='بازیکن')
-    goal = models.ForeignKey(Goal, unique=True, on_delete=CASCADE, verbose_name='گل')
+    goal = models.OneToOneField(Goal, on_delete=CASCADE, verbose_name='گل')
 
     created_date_time = models.DateTimeField(verbose_name='زمان ساخت')
     deleted = models.BooleanField(default=False, verbose_name='حذف شده')

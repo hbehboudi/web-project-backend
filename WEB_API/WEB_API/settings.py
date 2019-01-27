@@ -27,7 +27,6 @@ DEBUG = True
 ALLOWED_HOSTS = []
 
 # Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -42,7 +41,7 @@ INSTALLED_APPS = [
     'corsheaders',
 
     'news',
-    'Slider',
+    'home',
     'leagues',
     'team',
     'tag',
@@ -50,6 +49,7 @@ INSTALLED_APPS = [
     'membership',
     'game',
 ]
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

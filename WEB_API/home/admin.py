@@ -1,5 +1,5 @@
 from django.contrib import admin
 
-from Slider.models import SliderImage
+from home.models import SliderImage
 
 admin.site.register(SliderImage)
