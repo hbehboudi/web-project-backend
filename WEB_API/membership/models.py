@@ -12,7 +12,7 @@ class TeamLeague(models.Model):
     league = models.ForeignKey(League, on_delete=CASCADE, verbose_name='لیگ')
     created_date_time = models.DateTimeField(verbose_name='زمان ساخت')
     deleted = models.BooleanField(default=False, verbose_name='حذف شده')
-    active = models.BooleanField(default=False, verbose_name='در حال برگزاری مسابقات')
+    result = models.CharField(max_length=31, blank=True, verbose_name='نتیجه')
 
     def __str__(self):
         return "{} ({})".format(str(self.team), self.league)

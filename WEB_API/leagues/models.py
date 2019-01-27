@@ -14,9 +14,9 @@ class League(models.Model):
     )
 
     name = models.CharField(max_length=63, verbose_name='نام لیگ')
-    year = models.IntegerField(verbose_name='سال')
+    year = models.CharField(max_length=31, verbose_name='سال')
     confederation = models.CharField(max_length=31, verbose_name='کنفدراسیون')
-    country = models.CharField(max_length=31, blank=True, verbose_name='کشور', help_text='الزامی نیست.')
+    country = models.CharField(max_length=31, blank=True, verbose_name='کشور')
     level = models.IntegerField(blank=True, verbose_name='دسته')
     numberOfTeams = models.IntegerField(verbose_name='تعداد تیم ها')
     bestTeam = models.CharField(max_length=63, blank=True, verbose_name='بهترین تیم')
@@ -25,6 +25,7 @@ class League(models.Model):
     field = models.CharField(max_length=3, choices=FIELDS, default='OTH', verbose_name='ورزش')
     image_url = models.URLField(verbose_name='آدرس تصویر لیگ')
     tags = models.ManyToManyField(Tag, blank=True, verbose_name='تگ ها')
+    active = models.BooleanField(default=True, verbose_name='در حال برگذاری مسابقات')
 
     created_date_time = models.DateTimeField(verbose_name='زمان ساخت')
     slug = models.SlugField(unique=True, blank=True, allow_unicode=True, max_length=255)

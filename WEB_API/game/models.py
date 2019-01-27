@@ -101,7 +101,9 @@ class GameReport(models.Model):
 class Goal(models.Model):
     player = models.ForeignKey(Player, on_delete=CASCADE, verbose_name='بازیکن')
     game = models.ForeignKey(Game, on_delete=CASCADE, verbose_name='بازی')
-    team = models.ForeignKey(Team, on_delete=CASCADE, verbose_name='تیم')
+    scoring_team = models.ForeignKey(Team, on_delete=CASCADE, verbose_name='تیم گل زده', related_name='scoring_team')
+    receiving_team = models.ForeignKey(Team, on_delete=CASCADE, verbose_name='تیم گل خورده',
+                                       related_name='receiving_team')
     minute = models.IntegerField(verbose_name='دقیقه')
     second = models.IntegerField(verbose_name='ثانیه')
 
@@ -120,7 +122,10 @@ class Goal(models.Model):
 class PenaltyGoal(models.Model):
     player = models.ForeignKey(Player, on_delete=CASCADE, verbose_name='بازیکن')
     game = models.ForeignKey(Game, on_delete=CASCADE, verbose_name='بازی')
-    team = models.ForeignKey(Team, on_delete=CASCADE, verbose_name='تیم')
+    scoring_team = models.ForeignKey(Team, on_delete=CASCADE, verbose_name='تیم گل زده',
+                                     related_name='penalty_scoring_team')
+    receiving_team = models.ForeignKey(Team, on_delete=CASCADE, verbose_name='تیم گل خورده',
+                                       related_name='penalty_receiving_team')
     minute = models.IntegerField(verbose_name='دقیقه')
     second = models.IntegerField(verbose_name='ثانیه')
 
@@ -176,18 +181,15 @@ class RedCard(models.Model):
 
 class AssistGoal(models.Model):
     player = models.ForeignKey(Player, on_delete=CASCADE, verbose_name='بازیکن')
-    game = models.ForeignKey(Game, on_delete=CASCADE, verbose_name='بازی')
-    team = models.ForeignKey(Team, on_delete=CASCADE, verbose_name='تیم')
-    minute = models.IntegerField(verbose_name='دقیقه')
-    second = models.IntegerField(verbose_name='ثانیه')
+    goal = models.ForeignKey(Goal, unique=True, on_delete=CASCADE, verbose_name='گل')
 
     created_date_time = models.DateTimeField(verbose_name='زمان ساخت')
     deleted = models.BooleanField(default=False, verbose_name='حذف شده')
 
     def __str__(self):
-        return "{} {}".format(self.player, self.game)
+        return "{} {}".format(self.player, self.goal)
 
     class Meta:
+        ordering = ('-created_date_time', 'goal',)
         verbose_name = 'پاس گل'
         verbose_name_plural = 'پاس های گل'
-        ordering = ('-created_date_time', 'game',)
