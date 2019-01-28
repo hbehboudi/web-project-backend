@@ -1,21 +1,22 @@
 from django.db import OperationalError
+from django.db.models import Q
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-from game.models import Game
-from membership.models import PlayerTeam
+from game.models import Game, Substitute, Goal
+from membership.models import PlayerTeam, PlayerGame
 from news.models import News
 from player.models import Player, PlayerSliderImage
 
 
 @api_view()
-def newsList(request, player_slug):
+def news_list(request, player_slug):
     try:
         player = Player.objects.filter(slug__contains=player_slug, deleted=False)[0]
         tag_titles = player.tags.values_list('title')
         news = News.objects.filter(tags__title__in=tag_titles, deleted=False)
         return Response(news.values('title', 'category', 'image_url', 'field', 'created_date_time', 'slug'))
-    except IndexError:
+    except (IndexError, AssertionError, OperationalError):
         return Response({})
 
 
@@ -23,7 +24,7 @@ def newsList(request, player_slug):
 def info(request, player_slug):
     try:
         player = Player.objects.filter(slug__contains=player_slug, deleted=False)
-        player_info = Player.objects.values('name', 'image_url', 'post__name', 'field', 'age', 'city', 'height',
+        player_info = player.values('name', 'image_url', 'post__name', 'field', 'age', 'city', 'height',
                                             'weight', 'teamNum', 'nationalityTeamNum', 'website')
         return Response(player_info[0])
     except (IndexError, AssertionError, OperationalError):
@@ -40,39 +41,41 @@ def slider_images(request, player_slug):
         return Response({})
 
 
-# @api_view()
-# def player_statistics(request, player_slug):
-#     try:
-#         player = Player.objects.filter(slug__contains=player_slug, deleted=False)[0]
-#         leagues = PlayerTeam.objects.filter(player=player, deleted=False).values('teamLeague__league__name',
-#                                                                                  'teamLeague__league__year')
-#
-#         for league in leagues:
-#             player_team = PlayerTeam.objects.filter(player=player, deleted=False,
-#                                                     teamLeague__league__name=league['teamLeague__league__name'],
-#                                                     teamLeague__league__year=league['teamLeague__league__year'])[0]
-#
-#             league['team'] = player_team.teamLeague.team.name
-#             league['num'] = player_team.num
-#             league['games'] = Game.objects.filter(league__name=league['teamLeague__league__name'],
-#                                                   league__year=league['teamLeague__league__year'],
-#                                                   deleted=False, =)
-#
-#             league['scoring_goal_number'] = Goal.objects.\
-#                 filter(game__league__name=league['league__name'], deleted=False, scoring_team=team).count()
-#
-#             league['receiving_goal_number'] = Goal.objects.\
-#                 filter(game__league__name=league['league__name'], deleted=False, receiving_team=team).count()
-#
-#             league['win_num'] = Game.objects.filter(league__name=league['league__name'], deleted=False). \
-#                 filter(Q(team1=team, team_state1='W') | Q(team2=team, team_state2='W')).count()
-#
-#             league['lose_num'] = Game.objects.filter(league__name=league['league__name'], deleted=False). \
-#                 filter(Q(team1=team, team_state1='L') | Q(team2=team, team_state2='L')).count()
-#
-#             league['draw_num'] = Game.objects.filter(league__name=league['league__name'], deleted=False). \
-#                 filter(Q(team1=team, team_state1='D') | Q(team2=team, team_state2='D')).count()
-#
-#         return Response(leagues)
-#     except IndexError:
-#         return Response({})
+@api_view()
+def player_statistics(request, player_slug):
+    try:
+        player = Player.objects.filter(slug__contains=player_slug, deleted=False)[0]
+        leagues = PlayerTeam.objects.filter(player=player, deleted=False).values('teamLeague__league__name',
+                                                                                 'teamLeague__league__year')
+
+        for league in leagues:
+            player_team = PlayerTeam.objects.filter(player=player, deleted=False,
+                                                    teamLeague__league__name=league['teamLeague__league__name'],
+                                                    teamLeague__league__year=league['teamLeague__league__year'])
+
+            league['team'] = player_team[0].teamLeague.team.name
+
+            league['num'] = player_team[0].num
+
+            league['game_num'] = PlayerGame.objects.\
+                                     filter(player=player, team__name=league['team'], deleted=False,
+                                            game__league__name=league['teamLeague__league__name'],
+                                            game__league__year=league['teamLeague__league__year']).count() + \
+                                 Substitute.objects.\
+                                     filter(in_player=player, team__name=league['team'], deleted=False,
+                                            game__league__name=league['teamLeague__league__name'],
+                                            game__league__year=league['teamLeague__league__year']).count()
+
+            league['scoring_goal_number'] = Goal.objects. \
+                filter(player=player, deleted=False, scoring_team__name=league['team'], penalty=False,
+                       game__league__name=league['teamLeague__league__name'],
+                       game__league__year=league['teamLeague__league__year']).count()
+
+            league['scoring_penalty_goal_number'] = Goal.objects. \
+                filter(player=player, deleted=False, scoring_team__name=league['team'], penalty=True,
+                       game__league__name=league['teamLeague__league__name'],
+                       game__league__year=league['teamLeague__league__year']).count()
+
+        return Response(leagues)
+    except IndexError:
+        return Response({})

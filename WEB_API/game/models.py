@@ -179,3 +179,23 @@ class AssistGoal(models.Model):
         ordering = ('-created_date_time', 'goal',)
         verbose_name = 'پاس گل'
         verbose_name_plural = 'پاس های گل'
+
+
+class Substitute(models.Model):
+    in_player = models.ForeignKey(Player, on_delete=CASCADE, related_name='in_player', verbose_name='بازیکن وارد شده')
+    out_player = models.ForeignKey(Player, on_delete=CASCADE, related_name='out_player', verbose_name='بازیکن خارج شده')
+    game = models.ForeignKey(Game, on_delete=CASCADE, verbose_name='بازی')
+    team = models.ForeignKey(Team, on_delete=CASCADE, verbose_name='تیم')
+
+    minute = models.IntegerField(verbose_name='دقیقه')
+    second = models.IntegerField(verbose_name='ثانیه')
+    created_date_time = models.DateTimeField(verbose_name='زمان ساخت')
+    deleted = models.BooleanField(default=False, verbose_name='حذف شده')
+
+    def __str__(self):
+        return "{} {} ({})".format(self.in_player, self.out_player, self.game)
+
+    class Meta:
+        verbose_name = 'تعویض'
+        verbose_name_plural = 'تعویض'
+        ordering = ('-created_date_time', 'game',)

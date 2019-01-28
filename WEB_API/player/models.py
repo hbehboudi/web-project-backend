@@ -68,7 +68,7 @@ class Player(models.Model):
 class PlayerSliderImage(models.Model):
     title = models.CharField(max_length=127, verbose_name='عنوان')
     image_url = models.URLField(verbose_name='آدرس تصویر')
-    player = models.ForeignKey(Player, verbose_name='تیم', on_delete=models.CASCADE)
+    player = models.ForeignKey(Player, verbose_name='بازیکن', on_delete=models.CASCADE)
     created_date_time = models.DateTimeField(verbose_name='زمان ساخت')
     deleted = models.BooleanField(default=False, verbose_name='حذف شده')
 
