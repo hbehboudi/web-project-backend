@@ -1,6 +1,4 @@
 from django.db import models
-
-from django.db import models
 from django.db.models import CASCADE
 from django.utils.text import slugify
 
@@ -12,35 +10,44 @@ from team.models import Team
 
 class Game(models.Model):
     FIELDS = (
-        ('FTB', 'Football'),
-        ('BSK', 'Basketball'),
+        ('FTB', 'فوتبال'),
+        ('BSK', 'بسکتبال'),
+    )
+
+    STATE = (
+        ('W', 'برنده'),
+        ('D', 'تساوی'),
+        ('L', 'بازنده'),
     )
 
     team1 = models.ForeignKey(Team, on_delete=CASCADE, verbose_name='تیم۱', related_name='host')
     team2 = models.ForeignKey(Team, on_delete=CASCADE, verbose_name='تیم۲', related_name='guest')
     league = models.ForeignKey(League, on_delete=CASCADE, verbose_name='لیگ')
 
-    goals1 = models.IntegerField(verbose_name='گل های تیم ۱')
-    goals2 = models.IntegerField(verbose_name='گل های تیم ۲')
-    shots1 = models.IntegerField(verbose_name='شوت های تیم ۱')
-    shots2 = models.IntegerField(verbose_name='شوت های تیم ۲')
-    shots_on_target1 = models.IntegerField(verbose_name='شوت های داخل چارچوب تیم ۱')
-    shots_on_target2 = models.IntegerField(verbose_name='شوت های داخل چارچوب تیم ۲')
-    possession1 = models.IntegerField(verbose_name='مالکیت توپ تیم ۱')
-    possession2 = models.IntegerField(verbose_name='مالکیت توپ تیم ۲')
-    passes1 = models.IntegerField(verbose_name='پاس های تیم ۱')
-    passes2 = models.IntegerField(verbose_name='پاس های تیم ۲')
-    fouls1 = models.IntegerField(verbose_name='خطا های تیم۱')
-    fouls2 = models.IntegerField(verbose_name='خطا های تیم۱')
-    yellow_cards1 = models.IntegerField(verbose_name='کارت زرد های تیم ۱')
-    yellow_cards2 = models.IntegerField(verbose_name='کارت زرد های تیم ۲')
-    red_cards1 = models.IntegerField(verbose_name='کارت قرمز های تیم ۱')
-    red_cards2 = models.IntegerField(verbose_name='کارت قرمز های تیم ۲')
-    offsides1 = models.IntegerField(verbose_name='آفساید های تیم ۱')
-    offsides2 = models.IntegerField(verbose_name='آفساید های تیم ۲')
-    corners1 = models.IntegerField(verbose_name='کرنر های تیم ۱')
-    corners2 = models.IntegerField(verbose_name='کرنر های تیم ۲')
+    team_state1 = models.CharField(max_length=1, choices=STATE, blank=True, verbose_name='نتیجه بازی ۱')
+    team_state2 = models.CharField(max_length=1, choices=STATE, blank=True, verbose_name='نتیجه بازی ۲')
+    goals1 = models.IntegerField(blank=True, verbose_name='گل های تیم ۱')
+    goals2 = models.IntegerField(blank=True, verbose_name='گل های تیم ۲')
+    shots1 = models.IntegerField(blank=True, verbose_name='شوت های تیم ۱')
+    shots2 = models.IntegerField(blank=True, verbose_name='شوت های تیم ۲')
+    shots_on_target1 = models.IntegerField(blank=True, verbose_name='شوت های داخل چارچوب تیم ۱')
+    shots_on_target2 = models.IntegerField(blank=True, verbose_name='شوت های داخل چارچوب تیم ۲')
+    possession1 = models.IntegerField(blank=True, verbose_name='مالکیت توپ تیم ۱')
+    possession2 = models.IntegerField(blank=True, verbose_name='مالکیت توپ تیم ۲')
+    passes1 = models.IntegerField(blank=True, verbose_name='پاس های تیم ۱')
+    passes2 = models.IntegerField(blank=True, verbose_name='پاس های تیم ۲')
+    fouls1 = models.IntegerField(blank=True, verbose_name='خطا های تیم۱')
+    fouls2 = models.IntegerField(blank=True, verbose_name='خطا های تیم۱')
+    yellow_cards1 = models.IntegerField(blank=True, verbose_name='کارت زرد های تیم ۱')
+    yellow_cards2 = models.IntegerField(blank=True, verbose_name='کارت زرد های تیم ۲')
+    red_cards1 = models.IntegerField(blank=True, verbose_name='کارت قرمز های تیم ۱')
+    red_cards2 = models.IntegerField(blank=True, verbose_name='کارت قرمز های تیم ۲')
+    offsides1 = models.IntegerField(blank=True, verbose_name='آفساید های تیم ۱')
+    offsides2 = models.IntegerField(blank=True, verbose_name='آفساید های تیم ۲')
+    corners1 = models.IntegerField(blank=True, verbose_name='کرنر های تیم ۱')
+    corners2 = models.IntegerField(blank=True, verbose_name='کرنر های تیم ۲')
     game_date = models.DateTimeField(verbose_name='تاریخ و ساعت بازی')
+    full_time = models.BooleanField(default=False, verbose_name='بازی انجام شده')
     field = models.CharField(max_length=3, choices=FIELDS, default='OTH', verbose_name='ورزش')
     tags = models.ManyToManyField(Tag, blank=True, verbose_name='تگ ها')
     created_date_time = models.DateTimeField(verbose_name='زمان ساخت')
@@ -51,7 +58,7 @@ class Game(models.Model):
         return "{}-{} ({})_{}".format(self.team1, self.team2, self.league, self.game_date)
 
     class Meta:
-        ordering = ('-created_date_time', 'team1', 'team2', 'league')
+        ordering = ('-game_date', 'team1', 'team2', 'league')
         verbose_name = 'بازی'
         verbose_name_plural = 'بازی ها'
         unique_together = ('team1', 'team2', 'league', 'game_date')
@@ -104,6 +111,7 @@ class Goal(models.Model):
     scoring_team = models.ForeignKey(Team, on_delete=CASCADE, verbose_name='تیم گل زده', related_name='scoring_team')
     receiving_team = models.ForeignKey(Team, on_delete=CASCADE, verbose_name='تیم گل خورده',
                                        related_name='receiving_team')
+    penalty = models.BooleanField(default=False, verbose_name='پنالتی')
     minute = models.IntegerField(verbose_name='دقیقه')
     second = models.IntegerField(verbose_name='ثانیه')
 
@@ -116,28 +124,6 @@ class Goal(models.Model):
     class Meta:
         verbose_name = 'گل'
         verbose_name_plural = 'گل ها'
-        ordering = ('-created_date_time', 'game',)
-
-
-class PenaltyGoal(models.Model):
-    player = models.ForeignKey(Player, on_delete=CASCADE, verbose_name='بازیکن')
-    game = models.ForeignKey(Game, on_delete=CASCADE, verbose_name='بازی')
-    scoring_team = models.ForeignKey(Team, on_delete=CASCADE, verbose_name='تیم گل زده',
-                                     related_name='penalty_scoring_team')
-    receiving_team = models.ForeignKey(Team, on_delete=CASCADE, verbose_name='تیم گل خورده',
-                                       related_name='penalty_receiving_team')
-    minute = models.IntegerField(verbose_name='دقیقه')
-    second = models.IntegerField(verbose_name='ثانیه')
-
-    created_date_time = models.DateTimeField(verbose_name='زمان ساخت')
-    deleted = models.BooleanField(default=False, verbose_name='حذف شده')
-
-    def __str__(self):
-        return "{} {}".format(self.player, self.game)
-
-    class Meta:
-        verbose_name = 'گل پنالتی'
-        verbose_name_plural = 'گل های پنالتی'
         ordering = ('-created_date_time', 'game',)
 
 
