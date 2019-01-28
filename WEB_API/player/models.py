@@ -1,9 +1,30 @@
-import uuid
-
 from django.db import models
 from django.utils.text import slugify
 
 from news.models import Tag
+
+
+class PlayerPost(models.Model):
+    FIELDS = (
+        ('FTB', 'Football'),
+        ('BSK', 'Basketball'),
+        ('OTH', 'Other'),
+    )
+
+    name = models.CharField(max_length=127, unique=True, verbose_name='نام')
+    short_name = models.CharField(max_length=3, verbose_name='نام مخفف')
+
+    created_date_time = models.DateTimeField(verbose_name='زمان ساخت')
+    field = models.CharField(max_length=3, choices=FIELDS, default='OTH', verbose_name='ورزش')
+    deleted = models.BooleanField(default=False, verbose_name='حذف شده')
+
+    def __str__(self):
+        return "{} ({})".format(self.name, self.short_name)
+
+    class Meta:
+        ordering = ('name', 'short_name')
+        verbose_name = 'پست بازیکن'
+        verbose_name_plural = 'پست های بازیکنان'
 
 
 class Player(models.Model):
@@ -11,28 +32,9 @@ class Player(models.Model):
         ('FTB', 'Football'),
         ('BSK', 'Basketball'),
     )
-    # POSITIONS = (
-    #     ('GK', 'Goalkeeper'),
-    #     ('CB', 'Center fullback'),
-    #     ('SW', 'Sweeper'),
-    #     ('LFB', 'Left fullback'),
-    #     ('RFB', 'Right fullback'),
-    #     ('WB', 'Wingback'),
-    #     ('LM', 'Left midfield'),
-    #     ('RM', 'Right midfield'),
-    #     ('DM', 'Defensive midfield'),
-    #     ('CM', 'Center midfield'),
-    #     ('WM', 'Wide midfield'),
-    #     ('CF', 'Center forward'),
-    #     ('AM', 'Attacking midfield'),
-    #     ('S', 'Striker'),
-    #     ('SS', 'Second striker'),
-    #     ('LW', 'Left winger'),
-    #     ('RW', 'Right winger'),
-    # )
 
     name = models.CharField(max_length=127, unique=True, verbose_name='نام')
-    post = models.CharField(max_length=31, verbose_name='پست')
+    post = models.ForeignKey(PlayerPost, on_delete=models.CASCADE, verbose_name='پست')
     nationality = models.CharField(max_length=31, verbose_name='ملیت')
     team = models.CharField(max_length=63, verbose_name='باشگاه')
     city = models.CharField(max_length=31, verbose_name='محل تولد')
