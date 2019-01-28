@@ -1,19 +1,21 @@
-from rest_framework import generics
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 
 from news.models import News
-from news.serializers import NewsSerializer
+from player.models import Player
+from tag.models import Tag
 
 
-class FootballNewsList(generics.ListAPIView):
-    football = News.objects.all().filter(deleted=False, field='FTB')[0: 50]
-    serializer_class = NewsSerializer
+@api_view()
+def info(request, news_slug):
+    try:
+        news = News.objects.filter(slug__contains=news_slug, deleted=False)
+        result = news.values('title', 'summary', 'text', 'category', 'image_url', 'field',
+                             'created_date_time', 'slug')[0]
+        result['tags'] = news[0].tags.values_list('title')
+        result['news'] = News.objects.filter(tags__title__in=result['tags'], deleted=False)\
+            .values('title', 'category', 'image_url', 'slug')
 
-    queryset = football
-
-
-class BasketballNewsList(generics.ListAPIView):
-    basketball = News.objects.all().filter(deleted=False, field='BSK')[0: 50]
-    serializer_class = NewsSerializer
-
-    queryset = basketball
-
+        return Response(result)
+    except IndexError:
+        return Response({})
