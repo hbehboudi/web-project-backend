@@ -4,7 +4,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
 from game.models import Game, Goal
-from leagues.models import League
+from leagues.models import League, BestPlayer
 from membership.models import TeamLeague
 from news.models import News
 
@@ -81,3 +81,32 @@ def league_list(request, league_slug):
         return Response({})
 
 
+@api_view()
+def best_player_list(request, league_slug):
+    try:
+        league = League.objects.filter(slug__contains=league_slug, deleted=False)
+        best_players = BestPlayer.objects.filter(league=league, deleted=False, ).values('player__name', 'title',
+                                                                                        'player__post__name',
+                                                                                        'player__slug',
+                                                                                        'player__image_url')
+        return Response(best_players)
+    except IndexError:
+        return Response({})
+
+
+@api_view()
+def game_list(request, league_slug):
+    try:
+        level = request.GET.get('level')
+
+        league = League.objects.filter(slug__contains=league_slug, deleted=False)
+        games = Game.objects.filter(league=league, deleted=False)
+
+        if level is None:
+            games = games.filter(level=level)
+
+        games = games.values('team1__name', 'team2__name', 'team1__slug', 'team2__slug', 'slug', 'team1__image_url',
+                             'team2__image_url', 'goals1', 'goals2')
+        return Response(games)
+    except IndexError:
+        return Response({})

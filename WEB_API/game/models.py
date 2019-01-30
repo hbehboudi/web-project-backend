@@ -20,9 +20,49 @@ class Game(models.Model):
         ('L', 'بازنده'),
     )
 
+    LEVEL = (
+        (1, 'هفته اول'),
+        (2, 'هفته دوم'),
+        (3, 'هفته سوم'),
+        (4, 'هفته چهارم'),
+        (5, 'هفته پنجم'),
+        (6, 'هفته ششم'),
+        (7, 'هفته هفتم'),
+        (8, 'هفته هشتم'),
+        (9, 'هفته نهم'),
+        (10, 'هفته دهم'),
+        (11, 'هفته یازدهم'),
+        (12, 'هفته دوازدهم'),
+        (13, 'هفته سیزدهم'),
+        (14, 'هفته چهاردهم'),
+        (15, 'هفته پانزدهم'),
+        (16, 'هفته شانزدهم'),
+        (17, 'هفته هفدهم'),
+        (18, 'هفته هجدهم'),
+        (19, 'هفته نوزدهم'),
+        (20, 'هفته بیستم'),
+        (21, 'هفته بیست و یکم'),
+        (22, 'هفته بیست و دوم'),
+        (23, 'هفته بیست و سوم'),
+        (24, 'هفته بیست و چهارم'),
+        (25, 'هفته بیست و پنجم'),
+        (26, 'هفته بیست و ششم'),
+        (27, 'هفته بیست و هفتم'),
+        (28, 'هفته بیست و هشتم'),
+        (29, 'هفته بیست و نهم'),
+        (30, 'هفته سی ام'),
+        ('1/16', 'یک شانزدهم'),
+        ('1/8', 'یک هشتم'),
+        ('1/4', 'یک چهارم'),
+        ('1/2', 'نیمه نهایی'),
+        ('F', 'فینال'),
+        ('R', 'رده بندی'),
+    )
+
     team1 = models.ForeignKey(Team, on_delete=CASCADE, verbose_name='تیم۱', related_name='host')
     team2 = models.ForeignKey(Team, on_delete=CASCADE, verbose_name='تیم۲', related_name='guest')
     league = models.ForeignKey(League, on_delete=CASCADE, verbose_name='لیگ')
+    level = models.CharField(max_length=7, choices=LEVEL, verbose_name='مرحله')
 
     team_state1 = models.CharField(max_length=1, choices=STATE, blank=True, verbose_name='نتیجه بازی ۱')
     team_state2 = models.CharField(max_length=1, choices=STATE, blank=True, verbose_name='نتیجه بازی ۲')

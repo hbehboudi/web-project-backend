@@ -14,11 +14,49 @@ class League(models.Model):
         ('BSK', 'Basketball'),
     )
 
+    LEVEL = (
+        (1, 'هفته اول'),
+        (2, 'هفته دوم'),
+        (3, 'هفته سوم'),
+        (4, 'هفته چهارم'),
+        (5, 'هفته پنجم'),
+        (6, 'هفته ششم'),
+        (7, 'هفته هفتم'),
+        (8, 'هفته هشتم'),
+        (9, 'هفته نهم'),
+        (10, 'هفته دهم'),
+        (11, 'هفته یازدهم'),
+        (12, 'هفته دوازدهم'),
+        (13, 'هفته سیزدهم'),
+        (14, 'هفته چهاردهم'),
+        (15, 'هفته پانزدهم'),
+        (16, 'هفته شانزدهم'),
+        (17, 'هفته هفدهم'),
+        (18, 'هفته هجدهم'),
+        (19, 'هفته نوزدهم'),
+        (20, 'هفته بیستم'),
+        (21, 'هفته بیست و یکم'),
+        (22, 'هفته بیست و دوم'),
+        (23, 'هفته بیست و سوم'),
+        (24, 'هفته بیست و چهارم'),
+        (25, 'هفته بیست و پنجم'),
+        (26, 'هفته بیست و ششم'),
+        (27, 'هفته بیست و هفتم'),
+        (28, 'هفته بیست و هشتم'),
+        (29, 'هفته بیست و نهم'),
+        (30, 'هفته سی ام'),
+        ('1/16', 'یک شانزدهم'),
+        ('1/8', 'یک هشتم'),
+        ('1/4', 'یک چهارم'),
+        ('1/2', 'نیمه نهایی'),
+        ('F', 'فینال'),
+        ('R', 'رده بندی'),
+    )
+
     name = models.CharField(max_length=63, verbose_name='نام لیگ')
     year = models.CharField(max_length=31, verbose_name='سال')
     confederation = models.CharField(max_length=31, verbose_name='کنفدراسیون')
     country = models.CharField(max_length=31, blank=True, verbose_name='کشور')
-    level = models.IntegerField(blank=True, verbose_name='دسته')
     numberOfTeams = models.IntegerField(verbose_name='تعداد تیم ها')
     bestTeam = models.CharField(max_length=63, blank=True, verbose_name='بهترین تیم')
     establishedYear = models.IntegerField(verbose_name='سال تاسیس')
@@ -26,7 +64,9 @@ class League(models.Model):
     field = models.CharField(max_length=3, choices=FIELDS, default='OTH', verbose_name='ورزش')
     image_url = models.URLField(verbose_name='آدرس تصویر لیگ')
     tags = models.ManyToManyField(Tag, blank=True, verbose_name='تگ ها')
+
     active = models.BooleanField(default=True, verbose_name='در حال برگذاری مسابقات')
+    level = models.CharField(max_length=7, choices=LEVEL, verbose_name='مرحله')
 
     created_date_time = models.DateTimeField(verbose_name='زمان ساخت')
     slug = models.SlugField(unique=True, blank=True, allow_unicode=True, max_length=255)
@@ -63,7 +103,7 @@ class LeagueSliderImage(models.Model):
         verbose_name_plural = 'تصاویر اسلایدر لیگ'
 
 
-class BestPlayers(models.Model):
+class BestPlayer(models.Model):
     player = models.ForeignKey(Player, verbose_name='بازیکن', on_delete=models.CASCADE)
     league = models.ForeignKey(League, verbose_name='لیگ', on_delete=models.CASCADE)
     title = models.CharField(max_length=31, verbose_name='عنوان')
