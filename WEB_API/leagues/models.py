@@ -4,6 +4,7 @@ from django.db import models
 from django.utils.text import slugify
 
 from news.models import News
+from player.models import Player
 from tag.models import Tag
 
 
@@ -60,3 +61,20 @@ class LeagueSliderImage(models.Model):
         verbose_name = 'تصویر اسلایدر لیگ'
         ordering = ('-created_date_time', 'title')
         verbose_name_plural = 'تصاویر اسلایدر لیگ'
+
+
+class BestPlayers(models.Model):
+    player = models.ForeignKey(Player, verbose_name='بازیکن', on_delete=models.CASCADE)
+    league = models.ForeignKey(League, verbose_name='لیگ', on_delete=models.CASCADE)
+    title = models.CharField(max_length=31, verbose_name='عنوان')
+
+    created_date_time = models.DateTimeField(verbose_name='زمان ساخت')
+    deleted = models.BooleanField(default=False, verbose_name='حذف شده')
+
+    def __str__(self):
+        return "{} {} ({})".format(self.player.__str__(), self.league.__str__(), self.title.__str__())
+
+    class Meta:
+        verbose_name = 'برترین بازیکن'
+        ordering = ('-created_date_time', 'player')
+        verbose_name_plural = 'برترین بازیکنان'

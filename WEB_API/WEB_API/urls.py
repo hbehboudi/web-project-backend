@@ -13,4 +13,5 @@ urlpatterns = [
     path('api/game/', include('game.urls')),
     path('api/player/', include('player.urls')),
     path('api/news/', include('news.urls')),
+    path('api/league/', include('leagues.urls')),
 ]
