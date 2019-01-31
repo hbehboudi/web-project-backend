@@ -148,7 +148,9 @@ def league_games(request):
 def league_game(request, league_slug):
     try:
         league = League.objects.filter(slug__contains=league_slug, deleted=False).values('name', 'year')[0]
-        league['games'] = Game.objects.filter(deleted=False, league__name=league['name'], league__year=league['year'])
+        league['games'] = Game.objects.filter(deleted=False, league__name=league['name'], league__year=league['year']).\
+            values('team1__name', 'team2__name', 'team1__image_url', 'team2__image_url',
+                   'goals1', 'goals2', 'full_time', 'game_date', 'slug')
         return Response(league)
     except IndexError:
         return Response({})
