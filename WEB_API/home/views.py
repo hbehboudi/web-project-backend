@@ -157,7 +157,11 @@ def league_game(request, league_slug):
 @api_view()
 def league_names(request):
     try:
-        leagues = League.objects.filter(deleted=False).values('name', 'year', 'slug')
+        leagues = {
+            'football': League.objects.filter(deleted=False, field='FTB').values('name', 'year', 'slug'),
+            'Basketball': League.objects.filter(deleted=False, field='BSK').values('name', 'year', 'slug')
+        }
+
         return Response(leagues)
     except IndexError:
         return Response({})

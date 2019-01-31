@@ -12,5 +12,5 @@ urlpatterns = [
     path('games/', game_list),
     path('league-games/', league_games),
     path('league-games/<str:league_slug>/', league_game),
-    path('league-naems', league_names)
+    path('league-naems/', league_names)
 ]
