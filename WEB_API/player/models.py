@@ -8,14 +8,13 @@ class PlayerPost(models.Model):
     FIELDS = (
         ('FTB', 'Football'),
         ('BSK', 'Basketball'),
-        ('OTH', 'Other'),
     )
 
     name = models.CharField(max_length=127, unique=True, verbose_name='نام')
     short_name = models.CharField(max_length=3, verbose_name='نام مخفف')
 
     created_date_time = models.DateTimeField(verbose_name='زمان ساخت')
-    field = models.CharField(max_length=3, choices=FIELDS, default='OTH', verbose_name='ورزش')
+    field = models.CharField(max_length=3, choices=FIELDS, default='FTB', verbose_name='ورزش')
     deleted = models.BooleanField(default=False, verbose_name='حذف شده')
 
     def __str__(self):
@@ -36,11 +35,11 @@ class Player(models.Model):
     name = models.CharField(max_length=127, unique=True, verbose_name='نام')
     post = models.ForeignKey(PlayerPost, on_delete=models.CASCADE, verbose_name='پست')
     nationality = models.CharField(max_length=31, verbose_name='ملیت')
-    team = models.CharField(max_length=63, verbose_name='باشگاه')
-    city = models.CharField(max_length=31, verbose_name='محل تولد')
-    age = models.IntegerField(verbose_name='سن')
-    height = models.FloatField(verbose_name='قد')
-    weight = models.IntegerField(verbose_name='وزن')
+    placeBirth = models.CharField(max_length=31, verbose_name='محل تولد')
+    team = models.CharField(max_length=63, verbose_name='باشگاه', blank=True)
+    age = models.IntegerField(verbose_name='سن', blank=True)
+    height = models.FloatField(verbose_name='قد', blank=True)
+    weight = models.IntegerField(verbose_name='وزن', blank=True)
     teamNum = models.IntegerField(verbose_name='شماره پیراهن در باشگاه', blank=True)
     nationalityTeamNum = models.IntegerField(verbose_name='شماره پیراهن در تیم ملی', blank=True)
     website = models.URLField(verbose_name='وب سایت', blank=True)
@@ -48,7 +47,7 @@ class Player(models.Model):
     slug = models.SlugField(unique=True, blank=True, allow_unicode=True, max_length=255)
 
     created_date_time = models.DateTimeField(verbose_name='زمان ساخت')
-    field = models.CharField(max_length=3, choices=FIELDS, default='OTH', verbose_name='ورزش')
+    field = models.CharField(max_length=3, choices=FIELDS, default='FTB', verbose_name='ورزش')
     tags = models.ManyToManyField(Tag, blank=True, verbose_name='تگ ها')
     deleted = models.BooleanField(default=False, verbose_name='حذف شده')
 
