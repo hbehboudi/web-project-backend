@@ -31,21 +31,15 @@ def news_list_by_player(request, team_slug):
         num = request.GET.get('n')
         if num is None:
             num = 10
-        news = []
         team = Team.objects.filter(slug__contains=team_slug, deleted=False)[0]
+        news_list = News.objects.none()
         for player in PlayerTeam.objects.filter(teamLeague__team=team, deleted=False, ).values('player__name'):
-            news_list = News.objects. \
-                        filter(Q(title__contains=player['player__name']) |
-                               Q(tags__title__contains=player['player__name']) |
-                               Q(text__contains=player['player__name']) |
-                               Q(summary__contains=player['player__name'])). \
-                        values('title', 'category', 'image_url', 'field',
-                               'created_date_time', 'slug')
-            if news_list:
-                for item in news_list:
-                    news.append(item)
+            news_list = news_list | News.objects.\
+                filter(Q(title__contains=player['player__name']) | Q(tags__title__contains=player['player__name']) |
+                       Q(text__contains=player['player__name']) | Q(summary__contains=player['player__name']))
 
-        return Response(news[0: int(num)])
+        return Response(news_list.values('title', 'category', 'image_url', 'field',
+                                         'created_date_time', 'slug')[0: int(num)])
     except (IndexError, AssertionError, OperationalError):
         return Response({})
 
