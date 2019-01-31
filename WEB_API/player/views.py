@@ -12,10 +12,14 @@ from player.models import Player, PlayerSliderImage
 @api_view()
 def news_list(request, player_slug):
     try:
+        num = request.GET.get('n')
+        if num is None:
+            num = 10
         player = Player.objects.filter(slug__contains=player_slug, deleted=False)[0]
-        tag_titles = player.tags.values_list('title')
-        news = News.objects.filter(tags__title__in=tag_titles, deleted=False)
-        return Response(news.values('title', 'category', 'image_url', 'field', 'created_date_time', 'slug'))
+        news = News.objects.filter(Q(title__contains=player.name) | Q(tags__title__contains=player.name) |
+                                   Q(text__contains=player.name) | Q(summary__contains=player.name))
+        return Response(news.values('title', 'category', 'image_url', 'field',
+                                    'created_date_time', 'slug')[0: int(num)])
     except (IndexError, AssertionError, OperationalError):
         return Response({})
 
