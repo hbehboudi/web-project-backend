@@ -10,15 +10,42 @@ from membership.models import PlayerTeam, TeamLeague
 
 
 @api_view()
-def news_list(request, team_slug):
+def news_list_by_team(request, team_slug):
     try:
         num = request.GET.get('n')
         if num is None:
             num = 10
         team = Team.objects.filter(slug__contains=team_slug, deleted=False)[0]
-        tag_titles = team.tags.values_list('title')
-        news = News.objects.filter(tags__title__in=tag_titles, deleted=False)[0: int(num)]
-        return Response(news.values('title', 'category', 'image_url', 'field', 'created_date_time', 'slug'))
+        news = News.objects.filter(Q(title__contains=team.name) | Q(tags__title__contains=team.name) |
+                                   Q(text__contains=team.name) | Q(summary__contains=team.name))
+
+        return Response(news.values('title', 'category', 'image_url', 'field',
+                                    'created_date_time', 'slug')[0: int(num)])
+    except (IndexError, AssertionError, OperationalError):
+        return Response({})
+
+
+@api_view()
+def news_list_by_player(request, team_slug):
+    try:
+        num = request.GET.get('n')
+        if num is None:
+            num = 10
+        news = []
+        team = Team.objects.filter(slug__contains=team_slug, deleted=False)[0]
+        for player in PlayerTeam.objects.filter(teamLeague__team=team, deleted=False, ).values('player__name'):
+            news_list = News.objects. \
+                        filter(Q(title__contains=player['player__name']) |
+                               Q(tags__title__contains=player['player__name']) |
+                               Q(text__contains=player['player__name']) |
+                               Q(summary__contains=player['player__name'])). \
+                        values('title', 'category', 'image_url', 'field',
+                               'created_date_time', 'slug')
+            if news_list:
+                for item in news_list:
+                    news.append(item)
+
+        return Response(news[0: int(num)])
     except (IndexError, AssertionError, OperationalError):
         return Response({})
 
@@ -48,7 +75,7 @@ def info(request, team_slug):
 def members_list(request, team_slug):
     try:
         team = Team.objects.filter(slug__contains=team_slug, deleted=False)[0]
-        members = PlayerTeam.objects.filter(teamLeague__team=team, teamLeague__league__active=True, deleted=False).\
+        members = PlayerTeam.objects.filter(teamLeague__team=team, teamLeague__league__active=True, deleted=False). \
             values('player__name', 'player__post', 'player__image_url', 'player__slug')
         return Response(members)
     except (IndexError, AssertionError, OperationalError):
@@ -66,10 +93,10 @@ def team_statistics(request, team_slug):
             league['game_number'] = Game.objects.filter(league__name=league['league__name'], deleted=False). \
                 filter(Q(team1=team) | Q(team2=team)).count()
 
-            league['scoring_goal_number'] = Goal.objects.\
+            league['scoring_goal_number'] = Goal.objects. \
                 filter(game__league__name=league['league__name'], deleted=False, scoring_team=team).count()
 
-            league['receiving_goal_number'] = Goal.objects.\
+            league['receiving_goal_number'] = Goal.objects. \
                 filter(game__league__name=league['league__name'], deleted=False, receiving_team=team).count()
 
             league['win_num'] = Game.objects.filter(league__name=league['league__name'], deleted=False). \
@@ -93,7 +120,7 @@ def league_list(request, team_slug):
         leagues = TeamLeague.objects.filter(team=team, league__active=True, deleted=False).values('league__name',
                                                                                                   'league__year')
         for league in leagues:
-            league['teams'] = TeamLeague.objects.\
+            league['teams'] = TeamLeague.objects. \
                 filter(league__name=league['league__name'], league__year=league['league__year']).values('team__name')
             for team in league['teams']:
                 team['game_number'] = Game.objects.filter(deleted=False, league__name=league['league__name'],
