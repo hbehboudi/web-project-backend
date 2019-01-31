@@ -15,12 +15,12 @@ class Team(models.Model):
     internationalRank = models.IntegerField(blank=True, verbose_name='رتبه جهانی')
     city = models.CharField(max_length=31, blank=True, verbose_name='شهر')
     country = models.CharField(max_length=31, blank=True, verbose_name='کشور')
-    establishedYear = models.IntegerField(verbose_name='سال تاسیس', blank=True)
+    establishedYear = models.IntegerField(blank=True, verbose_name='سال تاسیس')
     coach = models.CharField(max_length=63, verbose_name='سرمربی')
     captain = models.CharField(max_length=63, verbose_name='کاپیتان')
-    website = models.URLField(verbose_name='وب سایت')
+    website = models.URLField(blank=True, verbose_name='وب سایت')
     image_url = models.URLField(null=False, verbose_name='آدرس تصویر لیگ')
-    field = models.CharField(max_length=3, choices=FIELDS, default='OTH', verbose_name='ورزش')
+    field = models.CharField(max_length=3, choices=FIELDS, default='FTB', verbose_name='ورزش')
     tags = models.ManyToManyField(Tag, blank=True, verbose_name='تگ ها')
 
     created_date_time = models.DateTimeField(verbose_name='زمان ساخت')
@@ -42,7 +42,7 @@ class Team(models.Model):
 
 class TeamSliderImage(models.Model):
     title = models.CharField(max_length=127, verbose_name='عنوان')
-    image_url = models.URLField(null=False, verbose_name='آدرس تصویر')
+    image_url = models.URLField(verbose_name='آدرس تصویر')
     team = models.ForeignKey(Team, verbose_name='تیم', on_delete=models.CASCADE)
 
     created_date_time = models.DateTimeField(verbose_name='زمان ساخت')
