@@ -53,10 +53,10 @@ def slider_images(request):
 @api_view()
 def league_tables(request):
     try:
-        leagues = League.objects.all().values('name', 'year')
+        leagues = League.objects.all().values('name', 'year', 'slug')
         for league in leagues:
             league['teams'] = TeamLeague.objects. \
-                filter(league__name=league['name'], league__year=league['year']).values('team__name')
+                filter(league__name=league['name'], league__year=league['year']).values('team__name', 'team__slug')
             for team in league['teams']:
                 team['game_number'] = Game.objects.filter(deleted=False, league__name=league['name'],
                                                           league__year=league['year']). \
@@ -88,7 +88,7 @@ def league_table(request, league_slug):
     try:
         league = League.objects.filter(slug__contains=league_slug, deleted=False).values('name', 'year')[0]
         league['teams'] = TeamLeague.objects.filter(league__name=league['name'], league__year=league['year']).\
-            values('team__name')
+            values('team__name', 'team__slug')
         for team in league['teams']:
             team['game_number'] = Game.objects.filter(deleted=False, league__name=league['name'],
                                                       league__year=league['year']). \
@@ -158,9 +158,14 @@ def league_game(request, league_slug):
 def league_names(request):
     try:
         leagues = {
-            'football': League.objects.filter(deleted=False, field='FTB').values('name', 'year', 'slug'),
-            'basketball': League.objects.filter(deleted=False, field='BSK').values('name', 'year', 'slug')
+            'football': {},
+            'basketball': {},
         }
+
+        for league in League.objects.filter(deleted=False, field='FTB', active=True).values('name', 'slug'):
+            leagues['football'][league['name']] = league['slug']
+        for league in League.objects.filter(deleted=False, field='BSK', active=True).values('name', 'slug'):
+            leagues['basketball'][league['name']] = league['slug']
 
         return Response(leagues)
     except IndexError:
