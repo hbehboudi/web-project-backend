@@ -115,7 +115,8 @@ def league_list(request, team_slug):
                                                                                                   'league__year')
         for league in leagues:
             league['teams'] = TeamLeague.objects. \
-                filter(league__name=league['league__name'], league__year=league['league__year']).values('team__name')
+                filter(league__name=league['league__name'], league__year=league['league__year']).values('team__name,'
+                                                                                                        'team__slug')
             for team in league['teams']:
                 team['game_number'] = Game.objects.filter(deleted=False, league__name=league['league__name'],
                                                           league__year=league['league__year']). \

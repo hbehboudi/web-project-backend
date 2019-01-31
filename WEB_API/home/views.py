@@ -113,6 +113,11 @@ def league_table(request, league_slug):
 
         league['teams'] = sorted(league['teams'], key=lambda i: i['score'], reverse=True)
 
+        counter = 0
+        for team in league['teams']:
+            counter += 1
+            team['rank'] = counter
+
         return Response(league)
     except IndexError:
         return Response({})

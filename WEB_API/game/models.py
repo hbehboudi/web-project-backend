@@ -66,26 +66,45 @@ class Game(models.Model):
 
     team_state1 = models.CharField(max_length=1, choices=STATE, blank=True, verbose_name='نتیجه بازی ۱')
     team_state2 = models.CharField(max_length=1, choices=STATE, blank=True, verbose_name='نتیجه بازی ۲')
-    goals1 = models.IntegerField(blank=True, verbose_name='گل های تیم ۱')
-    goals2 = models.IntegerField(blank=True, verbose_name='گل های تیم ۲')
-    shots1 = models.IntegerField(blank=True, verbose_name='شوت های تیم ۱')
-    shots2 = models.IntegerField(blank=True, verbose_name='شوت های تیم ۲')
-    shots_on_target1 = models.IntegerField(blank=True, verbose_name='شوت های داخل چارچوب تیم ۱')
-    shots_on_target2 = models.IntegerField(blank=True, verbose_name='شوت های داخل چارچوب تیم ۲')
-    possession1 = models.IntegerField(blank=True, verbose_name='مالکیت توپ تیم ۱')
-    possession2 = models.IntegerField(blank=True, verbose_name='مالکیت توپ تیم ۲')
-    passes1 = models.IntegerField(blank=True, verbose_name='پاس های تیم ۱')
-    passes2 = models.IntegerField(blank=True, verbose_name='پاس های تیم ۲')
+    goals1 = models.IntegerField(blank=True, verbose_name='گل های تیم ۱',
+                                 help_text='در صورتی که بازی مورد نظر فوتبال است.')
+    goals2 = models.IntegerField(blank=True, verbose_name='گل های تیم ۲',
+                                 help_text='در صورتی که بازی مورد نظر فوتبال است.')
+    shots1 = models.IntegerField(blank=True, verbose_name='شوت های تیم ۱',
+                                 help_text='در صورتی که بازی مورد نظر فوتبال است.')
+    shots2 = models.IntegerField(blank=True, verbose_name='شوت های تیم ۲',
+                                 help_text='در صورتی که بازی مورد نظر فوتبال است.')
+    shots_on_target1 = models.IntegerField(blank=True, verbose_name='شوت های داخل چارچوب تیم ۱',
+                                           help_text='در صورتی که بازی مورد نظر فوتبال است.')
+    shots_on_target2 = models.IntegerField(blank=True, verbose_name='شوت های داخل چارچوب تیم ۲',
+                                           help_text='در صورتی که بازی مورد نظر فوتبال است.')
+    possession1 = models.IntegerField(blank=True, verbose_name='مالکیت توپ تیم ۱',
+                                      help_text='در صورتی که بازی مورد نظر فوتبال است.')
+    possession2 = models.IntegerField(blank=True, verbose_name='مالکیت توپ تیم ۲',
+                                      help_text='در صورتی که بازی مورد نظر فوتبال است.')
+    passes1 = models.IntegerField(blank=True, verbose_name='پاس های تیم ۱',
+                                  help_text='در صورتی که بازی مورد نظر فوتبال است.')
+    passes2 = models.IntegerField(blank=True, verbose_name='پاس های تیم ۲',
+                                  help_text='در صورتی که بازی مورد نظر فوتبال است.')
+    yellow_cards1 = models.IntegerField(blank=True, verbose_name='کارت زرد های تیم ۱',
+                                        help_text='در صورتی که بازی مورد نظر فوتبال است.')
+    yellow_cards2 = models.IntegerField(blank=True, verbose_name='کارت زرد های تیم ۲',
+                                        help_text='در صورتی که بازی مورد نظر فوتبال است.')
+    red_cards1 = models.IntegerField(blank=True, verbose_name='کارت قرمز های تیم ۱',
+                                     help_text='در صورتی که بازی مورد نظر فوتبال است.')
+    red_cards2 = models.IntegerField(blank=True, verbose_name='کارت قرمز های تیم ۲',
+                                     help_text='در صورتی که بازی مورد نظر فوتبال است.')
+    offsides1 = models.IntegerField(blank=True, verbose_name='آفساید های تیم ۱',
+                                    help_text='در صورتی که بازی مورد نظر فوتبال است.')
+    offsides2 = models.IntegerField(blank=True, verbose_name='آفساید های تیم ۲',
+                                    help_text='در صورتی که بازی مورد نظر فوتبال است.')
+    corners1 = models.IntegerField(blank=True, verbose_name='کرنر های تیم ۱',
+                                   help_text='در صورتی که بازی مورد نظر فوتبال است.')
+    corners2 = models.IntegerField(blank=True, verbose_name='کرنر های تیم ۲',
+                                   help_text='در صورتی که بازی مورد نظر فوتبال است.')
+    
     fouls1 = models.IntegerField(blank=True, verbose_name='خطا های تیم۱')
     fouls2 = models.IntegerField(blank=True, verbose_name='خطا های تیم۱')
-    yellow_cards1 = models.IntegerField(blank=True, verbose_name='کارت زرد های تیم ۱')
-    yellow_cards2 = models.IntegerField(blank=True, verbose_name='کارت زرد های تیم ۲')
-    red_cards1 = models.IntegerField(blank=True, verbose_name='کارت قرمز های تیم ۱')
-    red_cards2 = models.IntegerField(blank=True, verbose_name='کارت قرمز های تیم ۲')
-    offsides1 = models.IntegerField(blank=True, verbose_name='آفساید های تیم ۱')
-    offsides2 = models.IntegerField(blank=True, verbose_name='آفساید های تیم ۲')
-    corners1 = models.IntegerField(blank=True, verbose_name='کرنر های تیم ۱')
-    corners2 = models.IntegerField(blank=True, verbose_name='کرنر های تیم ۲')
     game_date = models.DateTimeField(verbose_name='تاریخ و ساعت بازی')
     full_time = models.BooleanField(default=False, verbose_name='بازی انجام شده')
     field = models.CharField(max_length=3, choices=FIELDS, default='OTH', verbose_name='ورزش')
