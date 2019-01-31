@@ -158,15 +158,22 @@ def league_game(request, league_slug):
 def league_names(request):
     try:
         leagues = {
-            'football': {},
-            'basketball': {},
+            'football': [],
+            'basketball': [],
         }
 
         for league in League.objects.filter(deleted=False, field='FTB', active=True).values('name', 'slug'):
-            leagues['football'][league['name']] = league['slug']
+            leagues['football'].append({
+                'key': league['slug'],
+                'value': league['slug'],
+                'text': league['name'],
+            })
         for league in League.objects.filter(deleted=False, field='BSK', active=True).values('name', 'slug'):
-            leagues['basketball'][league['name']] = league['slug']
-
+            leagues['basketball'].append({
+                'key': league['slug'],
+                'value': league['slug'],
+                'text': league['name'],
+            })
         return Response(leagues)
     except IndexError:
         return Response({})
