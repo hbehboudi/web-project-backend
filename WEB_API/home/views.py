@@ -152,3 +152,12 @@ def league_game(request, league_slug):
         return Response(league)
     except IndexError:
         return Response({})
+
+
+@api_view()
+def league_names(request):
+    try:
+        leagues = League.objects.filter(deleted=False).values('name', 'year', 'slug')
+        return Response(leagues)
+    except IndexError:
+        return Response({})
