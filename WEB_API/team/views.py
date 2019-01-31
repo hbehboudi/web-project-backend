@@ -70,7 +70,7 @@ def members_list(request, team_slug):
     try:
         team = Team.objects.filter(slug__contains=team_slug, deleted=False)[0]
         members = PlayerTeam.objects.filter(teamLeague__team=team, teamLeague__league__active=True, deleted=False). \
-            values('player__name', 'player__post', 'player__image_url', 'player__slug')
+            values('player__name', 'player__post__name', 'player__image_url', 'player__slug')
         return Response(members)
     except (IndexError, AssertionError, OperationalError):
         return Response({})
