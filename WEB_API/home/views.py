@@ -110,6 +110,9 @@ def league_table(request, league_slug):
                        Q(team2__name=team['team__name'], team_state2='D')).count()
 
             team['score'] = team['win_number'] * 3 + team['draw_number']
+
+        league['teams'] = sorted(league['teams'], key=lambda i: i['score'], reverse=True)
+
         return Response(league)
     except IndexError:
         return Response({})

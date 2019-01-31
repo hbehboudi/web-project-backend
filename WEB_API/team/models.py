@@ -19,7 +19,7 @@ class Team(models.Model):
     coach = models.CharField(max_length=63, verbose_name='سرمربی')
     captain = models.CharField(max_length=63, verbose_name='کاپیتان')
     website = models.URLField(blank=True, verbose_name='وب سایت')
-    image_url = models.URLField(null=False, verbose_name='آدرس تصویر لیگ')
+    image_url = models.URLField(null=False, verbose_name='آدرس تصویر تیم')
     field = models.CharField(max_length=3, choices=FIELDS, default='FTB', verbose_name='ورزش')
     tags = models.ManyToManyField(Tag, blank=True, verbose_name='تگ ها')
 
