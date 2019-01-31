@@ -67,12 +67,12 @@ def player_statistics(request, player_slug):
                                             game__league__year=league['teamLeague__league__year']).count()
 
             league['scoring_goal_number'] = Goal.objects. \
-                filter(player=player, deleted=False, scoring_team__name=league['team'], penalty=False,
+                filter(player=player, deleted=False, scoring_team__name=league['team'], penalty=False, own_goal=False,
                        game__league__name=league['teamLeague__league__name'],
                        game__league__year=league['teamLeague__league__year']).count()
 
             league['scoring_penalty_goal_number'] = Goal.objects. \
-                filter(player=player, deleted=False, scoring_team__name=league['team'], penalty=True,
+                filter(player=player, deleted=False, scoring_team__name=league['team'], penalty=True, own_goal=False,
                        game__league__name=league['teamLeague__league__name'],
                        game__league__year=league['teamLeague__league__year']).count()
 

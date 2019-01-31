@@ -56,26 +56,85 @@ def reportList(request, game_slug):
 def player_list(request, game_slug):
     try:
         game = Game.objects.filter(slug__contains=game_slug, deleted=False)[0]
-        players = {'team1': game.team1.name,
-                   'team2': game.team2.name,
-                   'players1': PlayerGame.objects.filter(game=game, team=game.team1, fix=True, deleted=False).
+        players = {'team1': game.team1.name, 'team_slug_1': game.team1.slug, 'team_image_url1': game.team1.image_url,
+                   'team2': game.team2.name, 'team_slug_2': game.team2.slug, 'team_image_url2': game.team2.image_url,
+                   'fix_players1': PlayerGame.objects.filter(game=game, team=game.team1, fix=True, deleted=False).
                        values('player__slug', 'player__name', 'player__post__name'),
-                   'players2': PlayerGame.objects.filter(game=game, team=game.team2, fix=True, deleted=False).
+                   'fix_players2': PlayerGame.objects.filter(game=game, team=game.team2, fix=True, deleted=False).
+                       values('player__slug', 'player__name', 'player__post__name'),
+                   'substitute_player1': PlayerGame.objects.filter(game=game, team=game.team1, 
+                                                                   fix=False, deleted=False).
+                       values('player__slug', 'player__name', 'player__post__name'),
+                   'substitute_player2': PlayerGame.objects.filter(game=game, team=game.team2,
+                                                                   fix=False, deleted=False).
                        values('player__slug', 'player__name', 'player__post__name'),
                    }
-        for player in players['players1']:
+        for player in players['fix_players1']:
             try:
                 player['num'] = PlayerTeam.objects.filter(player__name=player['player__name'],
                                                           teamLeague__team__name=players['team1'],
                                                           teamLeague__league=game.league, )[0].num
+                substitute = Substitute.objects.filter(game=game, deleted=False,
+                                                       out_player__name=player['player__name'])
+                if substitute is not None:
+                    player['out_min'] = substitute[0].minute
+                    player['out_sec'] = substitute[0].second
             except IndexError:
                 pass
 
-        for player in players['players2']:
+        for player in players['fix_players2']:
             try:
                 player['num'] = PlayerTeam.objects.filter(player__name=player['player__name'],
                                                           teamLeague__team__name=players['team2'],
                                                           teamLeague__league=game.league, )[0].num
+                substitute = Substitute.objects.filter(game=game, deleted=False,
+                                                       out_player__name=player['player__name'])
+                if substitute is not None:
+                    player['out_min'] = substitute[0].minute
+                    player['out_sec'] = substitute[0].second
+            except IndexError:
+                pass
+        for player in players['substitute_player1']:
+            try:
+                player['num'] = PlayerTeam.objects.filter(player__name=player['player__name'],
+                                                          teamLeague__team__name=players['team1'],
+                                                          teamLeague__league=game.league)[0].num
+                substitute_in = Substitute.objects.filter(game=game, deleted=False,
+                                                           in_player__name=player['player__name'])
+
+                substitute_out = Substitute.objects.filter(game=game, deleted=False,
+                                                           out_player__name=player['player__name'])
+
+                if substitute_in is not None:
+                    player['in_min'] = substitute_in[0].minute
+                    player['in_sec'] = substitute_in[0].second
+
+                if substitute_in is not None:
+                    player['out_min'] = substitute_out[0].minute
+                    player['out_sec'] = substitute_out[0].second
+
+            except IndexError:
+                pass
+
+        for player in players['substitute_player2']:
+            try:
+                player['num'] = PlayerTeam.objects.filter(player__name=player['player__name'],
+                                                          teamLeague__team__name=players['team2'],
+                                                          teamLeague__league=game.league, )[0].num
+                substitute_in = Substitute.objects.filter(game=game, deleted=False,
+                                                           in_player__name=player['player__name'])
+
+                substitute_out = Substitute.objects.filter(game=game, deleted=False,
+                                                           out_player__name=player['player__name'])
+
+                if substitute_in is not None:
+                    player['in_min'] = substitute_in[0].minute
+                    player['in_sec'] = substitute_in[0].second
+
+                if substitute_in is not None:
+                    player['out_min'] = substitute_out[0].minute
+                    player['out_sec'] = substitute_out[0].second
+
             except IndexError:
                 pass
 
