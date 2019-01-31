@@ -159,7 +159,7 @@ def league_names(request):
     try:
         leagues = {
             'football': League.objects.filter(deleted=False, field='FTB').values('name', 'year', 'slug'),
-            'Basketball': League.objects.filter(deleted=False, field='BSK').values('name', 'year', 'slug')
+            'basketball': League.objects.filter(deleted=False, field='BSK').values('name', 'year', 'slug')
         }
 
         return Response(leagues)
