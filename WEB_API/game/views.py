@@ -16,13 +16,13 @@ def info(request, game_slug):
                                      'team2__image_url', 'shots1', 'shots2', 'shots_on_target1', 'shots_on_target2',
                                      'possession1', 'possession2', 'passes1', 'passes2', 'fouls1', 'fouls2',
                                      'yellow_cards1', 'yellow_cards2', 'red_cards1', 'red_cards2', 'offsides1',
-                                     'offsides2', 'corners1', 'corners2')
+                                     'offsides2', 'corners1', 'corners2', 'field')
         else:
             game_state = game.values('team1__name', 'team2__name', 'team1__slug', 'team2__slug', 'team1__image_url',
                                      'team2__image_url', 'all_score1', 'all_score2', 'score1_team1', 'score1_team2',
                                      'score2_team1', 'score2_team2', 'score3_team1', 'score3_team2', 'ribbond1',
                                      'ribbond2', 'style1', 'style2', 'out1', 'out2', 'fouls1', 'fouls2',
-                                     'counter_attack1', 'counter_attack2')
+                                     'counter_attack1', 'counter_attack2', 'field')
 
         return Response(game_state[0])
     except (IndexError, OperationalError):

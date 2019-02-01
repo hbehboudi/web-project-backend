@@ -6,5 +6,5 @@ from news.views import info, comment_list
 
 urlpatterns = [
     path('<str:news_slug>/', info),
-    path('<str:news_slug>', comment_list),
+    path('', comment_list),
 ]

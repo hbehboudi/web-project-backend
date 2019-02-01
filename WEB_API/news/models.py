@@ -55,10 +55,19 @@ class News(models.Model):
 
 class Comment(models.Model):
     news = models.ForeignKey(News, on_delete=models.CASCADE, verbose_name='خبر')
-    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='کاربر')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='کاربر', blank=True, null=True)
 
     title = models.CharField(max_length=31, verbose_name='عنوان')
     text = models.CharField(max_length=255, verbose_name='متن')
 
-    created_date_time = models.DateTimeField(verbose_name='زمان ساخت')
+    created_date_time = models.DateTimeField(verbose_name='زمان ساخت', auto_now_add=True)
     deleted = models.BooleanField(default=False, verbose_name='حذف شده')
+
+    class Meta:
+        verbose_name = 'کامنت'
+        verbose_name_plural = 'کامنت ها'
+        ordering = ('-created_date_time', 'title',)
+        unique_together = ('title',)
+
+    def __str__(self):
+        return self.title

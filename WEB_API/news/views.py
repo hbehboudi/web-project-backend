@@ -26,8 +26,8 @@ def comment_list(request):
     news = News.objects.filter(deleted=False, slug__contains=request.data['slug'])[0]
     if request.method == 'POST':
         comment = Comment(title=request.data['title'], text=request.data['text'],
-                          created_date_time=timezone.now(), news=news, user=request.user)
+                          news=news)
         comment.save()
 
-        return Response({"message": "Got some data!", "data": request.data})
+        return Response({})
     return Response({"message": "Hello, world!"})
