@@ -4,19 +4,34 @@ from django.utils.text import slugify
 from tag.models import Tag
 
 
+class NewsType(models.Model):
+    title = models.CharField(max_length=63, verbose_name='عنوان')
+    text = models.TextField(blank=True, verbose_name='درباره ی تگ')
+
+    created_date_time = models.DateTimeField(verbose_name='زمان ساخت')
+    deleted = models.BooleanField(default=False, verbose_name='حذف شده')
+
+    def __str__(self):
+        return self.title
+
+    class Meta:
+        verbose_name = 'نوع خبر'
+        verbose_name_plural = 'انواع خبر'
+        ordering = ('-created_date_time', 'title')
+
+
 class News(models.Model):
     FIELDS = (
         ('FTB', 'Football'),
         ('BSK', 'Basketball'),
-        ('OTH', 'Other'),
     )
 
     title = models.CharField(unique=True, max_length=127, verbose_name='عنوان')
     summary = models.CharField(max_length=255, blank=True, verbose_name='خلاصه خبر')
     text = models.TextField(blank=True, verbose_name='متن خبر')
-    category = models.CharField(max_length=31, verbose_name='نوع خبر')
+    type = models.ForeignKey(NewsType, on_delete=models.CASCADE, verbose_name='نوع خبر')
     image_url = models.URLField(verbose_name='آدرس تصویر')
-    field = models.CharField(max_length=3, choices=FIELDS, default='OTH', verbose_name='ورزش')
+    field = models.CharField(max_length=3, choices=FIELDS, default='FTB', verbose_name='ورزش')
     tags = models.ManyToManyField(Tag, blank=True, verbose_name='تگ ها')
 
     created_date_time = models.DateTimeField(verbose_name='زمان ساخت')
