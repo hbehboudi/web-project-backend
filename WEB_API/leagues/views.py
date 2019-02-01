@@ -84,6 +84,11 @@ def league_list(request, league_slug):
             else:
                 team['score3_number'] = Throw.objects.\
                     filter(deleted=False, score="3", game__league=league, team__name=team['team__name']).count()
+                team['score2_number'] = Throw.objects. \
+                    filter(deleted=False, score="2", game__league=league, team__name=team['team__name']).count()
+                team['score1_number'] = Throw.objects. \
+                    filter(deleted=False, score="1", game__league=league, team__name=team['team__name']).count()
+                team['score'] = 3 * team['score3_number'] + 2 * team['score2_number'] + team['score1_number']
                 team['ribbond_number'] = Ribbond.objects.\
                     filter(deleted=False, game__league=league, team__name=team['team__name']).count()
                 team['foul_number'] = Foul.objects.\
