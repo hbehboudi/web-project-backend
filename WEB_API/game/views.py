@@ -2,7 +2,7 @@ from django.db import OperationalError
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-from game.models import Game, GameSliderImage, GameReport, Goal, RedCard, YellowCard, Substitute
+from game.models import Game, GameSliderImage, GameReport, Goal, RedCard, YellowCard, Substitute, Throw, SendOff
 from membership.models import PlayerGame, PlayerTeam
 from news.models import News
 
@@ -174,6 +174,12 @@ def time_lines(request, game_slug):
         substitutes = Substitute.objects.filter(game=game, deleted=False).values('in_player__name', 'out_player__name',
                                                                                  'minute', 'second', 'team__name')
 
+        throws = Throw.objects.filter(game=game, deleted=False, penalty=False).values('minute', 'second',
+                                                                                      'team__name', 'score')
+
+        send_offs = SendOff.objects.filter(game=game, deleted=False).values('minute', 'second',
+                                                                            'player__name', 'team__name')
+
         for goal in goals:
             goal['type'] = 'goal'
             events.append(goal)
@@ -193,6 +199,14 @@ def time_lines(request, game_slug):
         for substitute in substitutes:
             substitute['type'] = 'substitute'
             events.append(substitute)
+
+        for throw in throws:
+            throw['type'] = 'throw'
+            events.append(throw)
+
+        for send_off in send_offs:
+            send_off['type'] = 'red card'
+            events.append(send_off)
 
         events = sorted(events, key=lambda i: i['second'])
         events = sorted(events, key=lambda i: i['minute'])

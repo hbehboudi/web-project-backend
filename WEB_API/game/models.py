@@ -350,6 +350,25 @@ class Foul(models.Model):
         ordering = ('-created_date_time', 'game',)
 
 
+class SendOff(models.Model):
+    player = models.ForeignKey(Player, on_delete=CASCADE, verbose_name='بازیکن')
+    game = models.ForeignKey(Game, on_delete=CASCADE, verbose_name='بازی')
+    team = models.ForeignKey(Team, on_delete=CASCADE, verbose_name='تیم')
+    minute = models.IntegerField(verbose_name='دقیقه')
+    second = models.IntegerField(verbose_name='ثانیه')
+
+    created_date_time = models.DateTimeField(verbose_name='زمان ساخت')
+    deleted = models.BooleanField(default=False, verbose_name='حذف شده')
+
+    def __str__(self):
+        return "{} {}".format(self.player, self.game)
+
+    class Meta:
+        verbose_name = 'اخراج'
+        verbose_name_plural = 'اخراج ها(مخصوص بازی بسکتبال)'
+        ordering = ('-created_date_time', 'game',)
+
+
 class AssistThrow(models.Model):
     player = models.ForeignKey(Player, on_delete=CASCADE, verbose_name='بازیکن')
     throw = models.OneToOneField(Throw, on_delete=CASCADE, verbose_name='پرتاب')
