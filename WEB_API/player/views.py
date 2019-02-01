@@ -73,6 +73,12 @@ def player_statistics(request, player_slug):
                                      filter(in_player=player, team__name=league['team'], deleted=False,
                                             game__league__name=league['teamLeague__league__name'],
                                             game__league__year=league['teamLeague__league__year']).count()
+            league['time'] = 0
+            for time in PlayerGame.objects.filter(player=player, deleted=False, team__name=league['team'],
+                                                  game__league__name=league['teamLeague__league__name'],
+                                                  game__league__year=league['teamLeague__league__name']). \
+                    values('time'):
+                league['time'] = time + league['time']
 
             if player.field == "FTB":
                 league['scoring_goal_number'] = Goal.objects. \
@@ -122,12 +128,6 @@ def player_statistics(request, player_slug):
                     filter(player=player, deleted=False, team__name=league['team'],
                            game__league__name=league['teamLeague__league__name'],
                            game__league__year=league['teamLeague__league__name']).count()
-                league['time'] = 0
-                for time in PlayerGame.objects.filter(player=player, deleted=False, team__name=league['team'],
-                                                      game__league__name=league['teamLeague__league__name'],
-                                                      game__league__year=league['teamLeague__league__name']).\
-                        values('time'):
-                    league['time'] = time + league['time']
 
         return Response(leagues)
     except IndexError:
