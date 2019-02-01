@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils.text import slugify
 
+from authentication.accounts.models import User
 from news.models import Tag
 
 
@@ -54,4 +55,21 @@ class TeamSliderImage(models.Model):
     class Meta:
         verbose_name = 'تصویر اسلایدر تیم'
         ordering = ('-created_date_time', 'title')
+        verbose_name_plural = 'تصاویر اسلایدر تیم ها'
+
+
+class Like(models.Model):
+    user = models.ForeignKey(User, verbose_name='کاربر', on_delete=models.CASCADE)
+    team = models.ForeignKey(Team, verbose_name='تیم', on_delete=models.CASCADE)
+
+    created_date_time = models.DateTimeField(verbose_name='زمان ساخت')
+    deleted = models.BooleanField(default=False, verbose_name='حذف شده')
+
+    def __str__(self):
+        return "{} {}".format(self.team, self.user)
+
+    class Meta:
+        verbose_name = 'تصویر اسلایدر تیم'
+        unique_together = ('user', 'team',)
+        ordering = ('-created_date_time', 'team')
         verbose_name_plural = 'تصاویر اسلایدر تیم ها'
