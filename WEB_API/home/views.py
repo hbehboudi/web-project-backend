@@ -19,7 +19,7 @@ def football_news_list(request):
         if num is None:
             num = 10
         football_news = News.objects.all().filter(deleted=False, field='FTB')[0: int(num)].\
-            values('title', 'summary', 'text', 'category', 'image_url', 'field', 'slug', 'created_date_time')
+            values('title', 'summary', 'text', 'type__title', 'image_url', 'field', 'slug', 'created_date_time')
         return Response(football_news)
     except (IndexError, AssertionError, OperationalError):
         return Response({})
@@ -32,7 +32,7 @@ def basketball_news_list(request):
         if num is None:
             num = 10
         basketball_news = News.objects.all().filter(deleted=False, field='BSK')[0: int(num)].\
-            values('title', 'summary', 'text', 'category', 'image_url', 'field', 'slug', 'created_date_time')
+            values('title', 'summary', 'text', 'type__title', 'image_url', 'field', 'slug', 'created_date_time')
         return Response(basketball_news)
     except (IndexError, AssertionError, OperationalError):
         return Response({})

@@ -27,7 +27,7 @@ def newsList(request, game_slug):
         game = Game.objects.filter(slug__contains=game_slug, deleted=False)[0]
         tag_titles = game.tags.values_list('title')
         news = News.objects.filter(tags__title__in=tag_titles, deleted=False)
-        return Response(news.values('title', 'category', 'image_url', 'created_date_time', 'slug'))
+        return Response(news.values('title', 'type__title', 'image_url', 'created_date_time', 'slug'))
     except IndexError:
         return Response({})
 

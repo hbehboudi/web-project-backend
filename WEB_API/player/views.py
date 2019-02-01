@@ -18,7 +18,7 @@ def news_list(request, player_slug):
         player = Player.objects.filter(slug__contains=player_slug, deleted=False)[0]
         news = News.objects.filter(Q(title__contains=player.name) | Q(tags__title__contains=player.name) |
                                    Q(text__contains=player.name) | Q(summary__contains=player.name))
-        return Response(news.values('title', 'category', 'image_url', 'field',
+        return Response(news.values('title', 'type__title', 'image_url', 'field',
                                     'created_date_time', 'slug')[0: int(num)])
     except (IndexError, AssertionError, OperationalError):
         return Response({})
@@ -29,7 +29,7 @@ def info(request, player_slug):
     try:
         player = Player.objects.filter(slug__contains=player_slug, deleted=False)
         player_info = player.values('name', 'image_url', 'post__name', 'field', 'age', 'birth_place', 'height',
-                                    'nationality', 'team' 'weight', 'teamNum', 'nationalityTeamNum', 'website')
+                                    'nationality', 'team', 'weight', 'teamNum', 'nationalityTeamNum', 'website')
         return Response(player_info[0])
     except (IndexError, AssertionError, OperationalError):
         return Response({})
@@ -59,6 +59,8 @@ def player_statistics(request, player_slug):
                                                     teamLeague__league__year=league['teamLeague__league__year'])
 
             league['team'] = player_team[0].teamLeague.team.name
+
+            league['team_slug'] = player_team[0].teamLeague.team.slug
 
             league['num'] = player_team[0].num
 

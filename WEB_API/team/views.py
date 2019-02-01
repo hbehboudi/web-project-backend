@@ -19,7 +19,7 @@ def news_list_by_team(request, team_slug):
         news = News.objects.filter(Q(title__contains=team.name) | Q(tags__title__contains=team.name) |
                                    Q(text__contains=team.name) | Q(summary__contains=team.name))
 
-        return Response(news.values('title', 'category', 'image_url', 'field',
+        return Response(news.values('title', 'type__title', 'image_url', 'field',
                                     'created_date_time', 'slug')[0: int(num)])
     except (IndexError, AssertionError, OperationalError):
         return Response({})
@@ -38,7 +38,7 @@ def news_list_by_player(request, team_slug):
                 filter(Q(title__contains=player['player__name']) | Q(tags__title__contains=player['player__name']) |
                        Q(text__contains=player['player__name']) | Q(summary__contains=player['player__name']))
 
-        return Response(news_list.values('title', 'category', 'image_url', 'field',
+        return Response(news_list.values('title', 'type__title', 'image_url', 'field',
                                          'created_date_time', 'slug')[0: int(num)])
     except (IndexError, AssertionError, OperationalError):
         return Response({})

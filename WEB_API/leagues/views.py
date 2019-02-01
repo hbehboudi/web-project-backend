@@ -30,7 +30,7 @@ def newsList(request, league_slug):
         news = News.objects.filter(Q(title__contains=league.name) | Q(tags__title__contains=league_slug.name) |
                                    Q(text__contains=league.name) | Q(summary__contains=league.name))
 
-        return Response(news.values('title', 'category', 'image_url', 'field',
+        return Response(news.values('title', 'type__title', 'image_url', 'field',
                                     'created_date_time', 'slug')[0: int(num)])
     except (IndexError, AssertionError, OperationalError):
         return Response({})
