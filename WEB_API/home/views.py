@@ -50,43 +50,44 @@ def slider_images(request):
         return Response({})
 
 
-@api_view()
-def league_tables(request):
-    try:
-        leagues = League.objects.all().values('name', 'year', 'slug')
-        for league in leagues:
-            league['teams'] = TeamLeague.objects. \
-                filter(league__name=league['name'], league__year=league['year']).values('team__name', 'team__slug')
-            for team in league['teams']:
-                team['game_number'] = Game.objects.filter(deleted=False, league__name=league['name'],
-                                                          league__year=league['year']). \
-                    filter(Q(team1__name=team['team__name']) | Q(team2__name=team['team__name'])).count()
-
-                team['win_number'] = Game.objects.filter(deleted=False, league__name=league['name'],
-                                                         league__year=league['year']). \
-                    filter(Q(team1__name=team['team__name'], team_state1='W') |
-                           Q(team2__name=team['team__name'], team_state2='W')).count()
-
-                team['lose_number'] = Game.objects.filter(deleted=False, league__name=league['name'],
-                                                          league__year=league['year']). \
-                    filter(Q(team1__name=team['team__name'], team_state1='L') |
-                           Q(team2__name=team['team__name'], team_state2='L')).count()
-
-                team['draw_number'] = Game.objects.filter(deleted=False, league__name=league['name'],
-                                                          league__year=league['year']). \
-                    filter(Q(team1__name=team['team__name'], team_state1='D') |
-                           Q(team2__name=team['team__name'], team_state2='D')).count()
-
-                team['score'] = team['win_number'] * 3 + team['draw_number']
-        return Response(leagues)
-    except IndexError:
-        return Response({})
+# @api_view()
+# def league_tables(request):
+#     try:
+#         leagues = League.objects.all().values('name', 'year', 'field', 'slug')
+#         for league in leagues:
+#             league['teams'] = TeamLeague.objects. \
+#                 filter(league__name=league['name'], league__year=league['year']).values('team__name', 'team__slug')
+#             for team in league['teams']:
+#                 team['game_number'] = Game.objects.filter(deleted=False, league__name=league['name'],
+#                                                           league__year=league['year']). \
+#                     filter(Q(team1__name=team['team__name']) | Q(team2__name=team['team__name'])).count()
+#
+#                 team['win_number'] = Game.objects.filter(deleted=False, league__name=league['name'],
+#                                                          league__year=league['year']). \
+#                     filter(Q(team1__name=team['team__name'], team_state1='W') |
+#                            Q(team2__name=team['team__name'], team_state2='W')).count()
+#
+#                 team['lose_number'] = Game.objects.filter(deleted=False, league__name=league['name'],
+#                                                           league__year=league['year']). \
+#                     filter(Q(team1__name=team['team__name'], team_state1='L') |
+#                            Q(team2__name=team['team__name'], team_state2='L')).count()
+#
+#                 if league['field'] == 'FTB':
+#                     team['draw_number'] = Game.objects.filter(deleted=False, league__name=league['name'],
+#                                                               league__year=league['year']). \
+#                         filter(Q(team1__name=team['team__name'], team_state1='D') |
+#                                Q(team2__name=team['team__name'], team_state2='D')).count()
+#
+#                     team['score'] = team['win_number'] * 3 + team['draw_number']
+#         return Response(leagues)
+#     except IndexError:
+#         return Response({})
 
 
 @api_view()
 def league_table(request, league_slug):
     try:
-        league = League.objects.filter(slug__contains=league_slug, deleted=False).values('name', 'year')[0]
+        league = League.objects.filter(slug__contains=league_slug, deleted=False).values('name', 'year', 'field')[0]
         league['teams'] = TeamLeague.objects.filter(league__name=league['name'], league__year=league['year']).\
             values('team__name', 'team__slug')
         for team in league['teams']:
@@ -104,15 +105,18 @@ def league_table(request, league_slug):
                 filter(Q(team1__name=team['team__name'], team_state1='L') |
                        Q(team2__name=team['team__name'], team_state2='L')).count()
 
-            team['draw_number'] = Game.objects.filter(deleted=False, league__name=league['name'],
-                                                      league__year=league['year']). \
-                filter(Q(team1__name=team['team__name'], team_state1='D') |
-                       Q(team2__name=team['team__name'], team_state2='D')).count()
+            if league['field'] == 'FTB':
+                team['draw_number'] = Game.objects.filter(deleted=False, league__name=league['name'],
+                                                          league__year=league['year']). \
+                    filter(Q(team1__name=team['team__name'], team_state1='D') |
+                           Q(team2__name=team['team__name'], team_state2='D')).count()
 
-            team['score'] = team['win_number'] * 3 + team['draw_number']
+                team['score'] = team['win_number'] * 3 + team['draw_number']
 
-        league['teams'] = sorted(league['teams'], key=lambda i: i['score'], reverse=True)
-
+        if league['field'] == 'FTB':
+            league['teams'] = sorted(league['teams'], key=lambda i: i['score'], reverse=True)
+        else:
+            league['teams'] = sorted(league['teams'], key=lambda i: i['win_number'], reverse=True)
         counter = 0
         for team in league['teams']:
             counter += 1
@@ -126,39 +130,55 @@ def league_table(request, league_slug):
 @api_view()
 def game_list(request):
     try:
-        games = Game.objects.filter(game_date__gte=timezone.now() - datetime.timedelta(days=1),
-                                    game_date__lte=timezone.now() + datetime.timedelta(days=1), deleted=False).values(
-            'team1__name', 'team2__name', 'team1__image_url', 'team2__image_url', 'goals1', 'goals2', 'full_time',
-            'game_date', 'league__name', 'league__year')
-
-        return Response(games)
+        football_games = Game.objects.filter(game_date__gte=timezone.now() - datetime.timedelta(days=1), field='FTB',
+                                             game_date__lte=timezone.now() + datetime.timedelta(days=1), deleted=False)\
+            .values('team1__name', 'team2__name', 'team1__image_url', 'team2__image_url', 'goals1', 'goals2',
+                    'full_time', 'game_date', 'league__name', 'league__year', 'field', 'team_state1', 'team_state2')
+        basketball_games = Game.objects.filter(game_date__gte=timezone.now() - datetime.timedelta(days=1),
+                                               game_date__lte=timezone.now() + datetime.timedelta(days=1),
+                                               field='BSK', deleted=False).\
+            values('team1__name', 'team2__name', 'team1__image_url', 'team2__image_url', 'all_score1', 'all_score2',
+                   'full_time', 'game_date', 'league__name', 'league__year', 'field', 'team_state1', 'team_state2')
+        result = []
+        for game in football_games:
+            result.append(game)
+        for game in basketball_games:
+            result.append(game)
+        return Response(result)
     except IndexError:
         return Response({})
 
 
-@api_view()
-def league_games(request):
-    try:
-        leagues = League.objects.all().filter(deleted=False).values('name', 'year')
-        for league in leagues:
-            league['games'] = Game.objects.filter(deleted=False, league__name=league['name'],
-                                                  league__year=league['year']).values('team1__name', 'team2__name',
-                                                                                      'team1__image_url',
-                                                                                      'team2__image_url',
-                                                                                      'goals1', 'goals2', 'full_time',
-                                                                                      'game_date', 'slug')
-        return Response(leagues)
-    except IndexError:
-        return Response({})
+# @api_view()
+# def league_games(request):
+#     try:
+#         leagues = League.objects.all().filter(deleted=False).values('name', 'year')
+#         for league in leagues:
+#             league['games'] = Game.objects.filter(deleted=False, league__name=league['name'],
+#                                                   league__year=league['year']).values('team1__name', 'team2__name',
+#                                                                                       'team1__image_url',
+#                                                                                       'team2__image_url',
+#                                                                                       'goals1', 'goals2', 'full_time',
+#                                                                                       'game_date', 'slug')
+#         return Response(leagues)
+#     except IndexError:
+#         return Response({})
 
 
 @api_view()
 def league_game(request, league_slug):
     try:
-        league = League.objects.filter(slug__contains=league_slug, deleted=False).values('name', 'year')[0]
-        league['games'] = Game.objects.filter(deleted=False, league__name=league['name'], league__year=league['year']).\
-            values('team1__name', 'team2__name', 'team1__image_url', 'team2__image_url',
-                   'goals1', 'goals2', 'full_time', 'game_date', 'slug')
+        league = League.objects.filter(slug__contains=league_slug, deleted=False).values('name', 'year', 'field')[0]
+        if league['field'] == "FTB":
+            league['games'] = Game.objects.filter(deleted=False, league__name=league['name'],
+                                                  league__year=league['year']).\
+                values('team1__name', 'team2__name', 'team1__image_url', 'team2__image_url', 'goals1', 'goals2',
+                       'full_time', 'game_date', 'slug', 'field')
+        else:
+            league['games'] = Game.objects.filter(deleted=False, league__name=league['name'],
+                                                  league__year=league['year']). \
+                values('team1__name', 'team2__name', 'team1__image_url', 'team2__image_url', 'all_score1', 'all_score2',
+                       'full_time', 'game_date', 'slug', 'field')
         return Response(league)
     except IndexError:
         return Response({})

@@ -67,50 +67,64 @@ class Game(models.Model):
     team_state1 = models.CharField(max_length=1, choices=STATE, blank=True, verbose_name='نتیجه بازی ۱')
     team_state2 = models.CharField(max_length=1, choices=STATE, blank=True, verbose_name='نتیجه بازی ۲')
 
-    goals1 = models.IntegerField(blank=True, verbose_name='گل های تیم ۱', help_text='برای بازی فوتبال')
-    goals2 = models.IntegerField(blank=True, verbose_name='گل های تیم ۲', help_text='برای بازی فوتبال')
-    shots1 = models.IntegerField(blank=True, verbose_name='شوت های تیم ۱', help_text='برای بازی فوتبال')
-    shots2 = models.IntegerField(blank=True, verbose_name='شوت های تیم ۲', help_text='برای بازی فوتبال')
-    shots_on_target1 = models.IntegerField(blank=True, verbose_name='شوت های داخل چارچوب تیم ۱',
+    goals1 = models.IntegerField(blank=True, null=True, verbose_name='گل های تیم ۱', help_text='برای بازی فوتبال')
+    goals2 = models.IntegerField(blank=True, null=True, verbose_name='گل های تیم ۲', help_text='برای بازی فوتبال')
+    shots1 = models.IntegerField(blank=True, null=True, verbose_name='شوت های تیم ۱', help_text='برای بازی فوتبال')
+    shots2 = models.IntegerField(blank=True, null=True, verbose_name='شوت های تیم ۲', help_text='برای بازی فوتبال')
+    shots_on_target1 = models.IntegerField(blank=True, null=True, verbose_name='شوت های داخل چارچوب تیم ۱',
                                            help_text='برای بازی فوتبال')
-    shots_on_target2 = models.IntegerField(blank=True, verbose_name='شوت های داخل چارچوب تیم ۲',
+    shots_on_target2 = models.IntegerField(blank=True, null=True, verbose_name='شوت های داخل چارچوب تیم ۲',
                                            help_text='برای بازی فوتبال')
-    possession1 = models.IntegerField(blank=True, verbose_name='مالکیت توپ تیم ۱', help_text='برای بازی فوتبال')
-    possession2 = models.IntegerField(blank=True, verbose_name='مالکیت توپ تیم ۲', help_text='برای بازی فوتبال')
-    passes1 = models.IntegerField(blank=True, verbose_name='پاس های تیم ۱', help_text='برای بازی فوتبال')
-    passes2 = models.IntegerField(blank=True, verbose_name='پاس های تیم ۲', help_text='برای بازی فوتبال')
-    yellow_cards1 = models.IntegerField(blank=True, verbose_name='کارت زرد های تیم ۱', help_text='برای بازی فوتبال')
-    yellow_cards2 = models.IntegerField(blank=True, verbose_name='کارت زرد های تیم ۲', help_text='برای بازی فوتبال')
-    red_cards1 = models.IntegerField(blank=True, verbose_name='کارت قرمز های تیم ۱', help_text='برای بازی فوتبال')
-    red_cards2 = models.IntegerField(blank=True, verbose_name='کارت قرمز های تیم ۲', help_text='برای بازی فوتبال')
-    offsides1 = models.IntegerField(blank=True, verbose_name='آفساید های تیم ۱', help_text='برای بازی فوتبال')
-    offsides2 = models.IntegerField(blank=True, verbose_name='آفساید های تیم ۲', help_text='برای بازی فوتبال')
-    corners1 = models.IntegerField(blank=True, verbose_name='کرنر های تیم ۱', help_text='برای بازی فوتبال')
-    corners2 = models.IntegerField(blank=True, verbose_name='کرنر های تیم ۲', help_text='برای بازی فوتبال')
+    possession1 = models.IntegerField(blank=True, null=True, verbose_name='مالکیت توپ تیم ۱',
+                                      help_text='برای بازی فوتبال')
+    possession2 = models.IntegerField(blank=True, null=True, verbose_name='مالکیت توپ تیم ۲',
+                                      help_text='برای بازی فوتبال')
+    passes1 = models.IntegerField(blank=True, null=True, verbose_name='پاس های تیم ۱', help_text='برای بازی فوتبال')
+    passes2 = models.IntegerField(blank=True, null=True, verbose_name='پاس های تیم ۲', help_text='برای بازی فوتبال')
+    yellow_cards1 = models.IntegerField(blank=True, null=True, verbose_name='کارت زرد های تیم ۱',
+                                        help_text='برای بازی فوتبال')
+    yellow_cards2 = models.IntegerField(blank=True, null=True, verbose_name='کارت زرد های تیم ۲',
+                                        help_text='برای بازی فوتبال')
+    red_cards1 = models.IntegerField(blank=True, null=True, verbose_name='کارت قرمز های تیم ۱',
+                                     help_text='برای بازی فوتبال')
+    red_cards2 = models.IntegerField(blank=True, null=True, verbose_name='کارت قرمز های تیم ۲',
+                                     help_text='برای بازی فوتبال')
+    offsides1 = models.IntegerField(blank=True, null=True, verbose_name='آفساید های تیم ۱',
+                                    help_text='برای بازی فوتبال')
+    offsides2 = models.IntegerField(blank=True, null=True, verbose_name='آفساید های تیم ۲',
+                                    help_text='برای بازی فوتبال')
+    corners1 = models.IntegerField(blank=True, null=True, verbose_name='کرنر های تیم ۱', help_text='برای بازی فوتبال')
+    corners2 = models.IntegerField(blank=True, null=True, verbose_name='کرنر های تیم ۲', help_text='برای بازی فوتبال')
 
-    score1_team1 = models.IntegerField(blank=True, verbose_name='پرتاب های ۱ امتیازی تیم ۱',
+    all_score1 = models.IntegerField(blank=True, null=True, verbose_name='امتیاز تیم ۱',
                                        help_text='برای بازی بسکتبال')
-    score2_team1 = models.IntegerField(blank=True, verbose_name='پرتاب های ۲ امتیازی تیم ۱',
+    all_score2 = models.IntegerField(blank=True, null=True, verbose_name='امتیاز تیم ۲',
                                        help_text='برای بازی بسکتبال')
-    score3_team1 = models.IntegerField(blank=True, verbose_name='پرتاب های ۳ امتیازی تیم ۱',
+    score1_team1 = models.IntegerField(blank=True, null=True, verbose_name='پرتاب های ۱ امتیازی تیم ۱',
                                        help_text='برای بازی بسکتبال')
-    score1_team2 = models.IntegerField(blank=True, verbose_name='پرتاب های ۱ امتیازی تیم ۲',
+    score2_team1 = models.IntegerField(blank=True, null=True, verbose_name='پرتاب های ۲ امتیازی تیم ۱',
                                        help_text='برای بازی بسکتبال')
-    score2_team2 = models.IntegerField(blank=True, verbose_name='پرتاب های ۲ امتیازی تیم ۲',
+    score3_team1 = models.IntegerField(blank=True, null=True, verbose_name='پرتاب های ۳ امتیازی تیم ۱',
                                        help_text='برای بازی بسکتبال')
-    score3_team2 = models.IntegerField(blank=True, verbose_name='پرتاب های ۳ امتیازی تیم ۲',
+    score1_team2 = models.IntegerField(blank=True, null=True, verbose_name='پرتاب های ۱ امتیازی تیم ۲',
                                        help_text='برای بازی بسکتبال')
-    ribbond1 = models.IntegerField(blank=True, verbose_name='ریباند تیم ۱', help_text='برای بازی بسکتبال')
-    ribbond2 = models.IntegerField(blank=True, verbose_name='ریباند تیم ۱', help_text='برای بازی بسکتبال')
-    style1 = models.IntegerField(blank=True, verbose_name='استیل های تیم ۱', help_text='برای بازی بسکتبال')
-    style2 = models.IntegerField(blank=True, verbose_name='استیل های تیم ۲', help_text='برای بازی بسکتبال')
-    out1 = models.IntegerField(blank=True, verbose_name='اخراج های تیم ۱', help_text='برای بازی بسکتبال')
-    out2 = models.IntegerField(blank=True, verbose_name='اخراج های تیم ۲', help_text='برای بازی بسکتبال')
-    counter_attack1 = models.IntegerField(blank=True, verbose_name='ضدحمله های تیم ۱', help_text='برای بازی بسکتبال')
-    counter_attack2 = models.IntegerField(blank=True, verbose_name='ضدحمله های تیم ۲', help_text='برای بازی بسکتبال')
+    score2_team2 = models.IntegerField(blank=True, null=True, verbose_name='پرتاب های ۲ امتیازی تیم ۲',
+                                       help_text='برای بازی بسکتبال')
+    score3_team2 = models.IntegerField(blank=True, null=True, verbose_name='پرتاب های ۳ امتیازی تیم ۲',
+                                       help_text='برای بازی بسکتبال')
+    ribbond1 = models.IntegerField(blank=True, null=True, verbose_name='ریباند تیم ۱', help_text='برای بازی بسکتبال')
+    ribbond2 = models.IntegerField(blank=True, null=True, verbose_name='ریباند تیم ۱', help_text='برای بازی بسکتبال')
+    style1 = models.IntegerField(blank=True, null=True, verbose_name='استیل های تیم ۱', help_text='برای بازی بسکتبال')
+    style2 = models.IntegerField(blank=True, null=True, verbose_name='استیل های تیم ۲', help_text='برای بازی بسکتبال')
+    out1 = models.IntegerField(blank=True, null=True, verbose_name='اخراج های تیم ۱', help_text='برای بازی بسکتبال')
+    out2 = models.IntegerField(blank=True, null=True, verbose_name='اخراج های تیم ۲', help_text='برای بازی بسکتبال')
+    counter_attack1 = models.IntegerField(blank=True, null=True, verbose_name='ضدحمله های تیم ۱',
+                                          help_text='برای بازی بسکتبال')
+    counter_attack2 = models.IntegerField(blank=True, null=True, verbose_name='ضدحمله های تیم ۲',
+                                          help_text='برای بازی بسکتبال')
 
-    fouls1 = models.IntegerField(blank=True, verbose_name='خطا های تیم۱')
-    fouls2 = models.IntegerField(blank=True, verbose_name='خطا های تیم۱')
+    fouls1 = models.IntegerField(blank=True, null=True, verbose_name='خطا های تیم۱')
+    fouls2 = models.IntegerField(blank=True, null=True, verbose_name='خطا های تیم۱')
 
     game_date = models.DateTimeField(verbose_name='تاریخ و ساعت بازی')
     full_time = models.BooleanField(default=False, verbose_name='بازی انجام شده')
@@ -131,6 +145,8 @@ class Game(models.Model):
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.__str__(), allow_unicode=True)
+        self.all_score1 = 3 * self.score3_team1 + 2 * self.score2_team1 + self.score1_team1
+        self.all_score2 = 3 * self.score3_team2 + 2 * self.score2_team2 + self.score1_team2
         super(Game, self).save(*args, **kwargs)
 
 
@@ -271,14 +287,15 @@ class Substitute(models.Model):
 
 class Throw(models.Model):
     SCORE = (
-        (1, 'پرتاب ۱ امتیازی'),
-        (2, 'پرتاب ۲ امتیازی'),
-        (3, 'پرتاب ۳ امتیازی'),
+        ("1", 'پرتاب ۱ امتیازی'),
+        ("2", 'پرتاب ۲ امتیازی'),
+        ("3", 'پرتاب ۳ امتیازی'),
     )
 
     player = models.ForeignKey(Player, on_delete=CASCADE, verbose_name='بازیکن')
     game = models.ForeignKey(Game, on_delete=CASCADE, verbose_name='بازی')
-    score = models.IntegerField(SCORE)
+    team = models.ForeignKey(Team, on_delete=CASCADE, verbose_name='تیم')
+    score = models.IntegerField(choices=SCORE, verbose_name='نوع پرتاب')
     minute = models.IntegerField(verbose_name='دقیقه')
     second = models.IntegerField(verbose_name='ثانیه')
 
@@ -297,6 +314,7 @@ class Throw(models.Model):
 class Ribbond(models.Model):
     player = models.ForeignKey(Player, on_delete=CASCADE, verbose_name='بازیکن')
     game = models.ForeignKey(Game, on_delete=CASCADE, verbose_name='بازی')
+    team = models.ForeignKey(Team, on_delete=CASCADE, verbose_name='تیم')
     minute = models.IntegerField(verbose_name='دقیقه')
     second = models.IntegerField(verbose_name='ثانیه')
 
@@ -315,6 +333,7 @@ class Ribbond(models.Model):
 class Foul(models.Model):
     player = models.ForeignKey(Player, on_delete=CASCADE, verbose_name='بازیکن')
     game = models.ForeignKey(Game, on_delete=CASCADE, verbose_name='بازی')
+    team = models.ForeignKey(Team, on_delete=CASCADE, verbose_name='تیم')
     minute = models.IntegerField(verbose_name='دقیقه')
     second = models.IntegerField(verbose_name='ثانیه')
 
@@ -333,6 +352,9 @@ class Foul(models.Model):
 class AssistThrow(models.Model):
     player = models.ForeignKey(Player, on_delete=CASCADE, verbose_name='بازیکن')
     throw = models.OneToOneField(Throw, on_delete=CASCADE, verbose_name='پرتاب')
+    team = models.ForeignKey(Team, on_delete=CASCADE, verbose_name='تیم')
+    minute = models.IntegerField(verbose_name='دقیقه')
+    second = models.IntegerField(verbose_name='ثانیه')
 
     created_date_time = models.DateTimeField(verbose_name='زمان ساخت')
     deleted = models.BooleanField(default=False, verbose_name='حذف شده')
