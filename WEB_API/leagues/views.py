@@ -3,7 +3,7 @@ from django.db.models import Q
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-from game.models import Game, Goal
+from game.models import Game, Goal, Throw, Ribbond, Foul
 from leagues.models import League, BestPlayer, LeagueSliderImage
 from membership.models import TeamLeague
 from news.models import News
@@ -54,7 +54,7 @@ def league_list(request, league_slug):
         result = league.values('name', 'year', 'field')[0]
         league = league[0]
 
-        result['teams'] = TeamLeague.objects.filter(league=league).values('team__name', 'team__field')
+        result['teams'] = TeamLeague.objects.filter(league=league).values('team__name', 'team__field', 'team__slug')
 
         for team in result['teams']:
             team['game_number'] = Game.objects.filter(deleted=False, league=league).\
@@ -81,6 +81,22 @@ def league_list(request, league_slug):
                 team['difference'] = team['scoring_goal_number'] - team['receiving_goal_number']
 
                 team['score'] = team['win_number'] * 3 + team['draw_number']
+            else:
+                team['score3_number'] = Throw.objects.\
+                    filter(deleted=False, score="3", game__league=league, team__name=team['team__name']).count()
+                team['ribbond_number'] = Ribbond.objects.\
+                    filter(deleted=False, game__league=league, team__name=team['team__name']).count()
+                team['foul_number'] = Foul.objects.\
+                    filter(deleted=False, game__league=league, team__name=team['team__name']).count()
+        if result['field'] == 'FTB':
+            result['teams'] = sorted(result['teams'], key=lambda i: i['difference'], reverse=True)
+            result['teams'] = sorted(result['teams'], key=lambda i: i['score'], reverse=True)
+        else:
+            result['teams'] = sorted(result['teams'], key=lambda i: i['win_number'], reverse=True)
+        counter = 0
+        for team in result['teams']:
+                counter += 1
+                team['rank'] = counter
         return Response(result)
     except IndexError:
         return Response({"error": 404})
