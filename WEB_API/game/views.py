@@ -54,7 +54,8 @@ def slider_images(request, game_slug):
 def reportList(request, game_slug):
     try:
         game = Game.objects.filter(slug__contains=game_slug, deleted=False)[0]
-        reports = GameReport.objects.filter(game=game, deleted=False).values('title', 'image_url', 'minute', 'second')
+        reports = GameReport.objects.filter(game=game, deleted=False).\
+            values('title', 'image_url', 'minute', 'second').order_by('minute', 'second')
         return Response(reports)
     except IndexError:
         return Response({})
