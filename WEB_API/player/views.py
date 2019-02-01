@@ -3,7 +3,7 @@ from django.db.models import Q
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-from game.models import Game, Substitute, Goal
+from game.models import Game, Substitute, Goal, Throw, Foul, Ribbond, YellowCard, RedCard, AssistGoal
 from membership.models import PlayerTeam, PlayerGame
 from news.models import News
 from player.models import Player, PlayerSliderImage
@@ -32,7 +32,7 @@ def info(request, player_slug):
                                             'weight', 'teamNum', 'nationalityTeamNum', 'website')
         return Response(player_info[0])
     except (IndexError, AssertionError, OperationalError):
-        return Response({'error': True})
+        return Response({})
 
 
 @api_view()
@@ -50,7 +50,8 @@ def player_statistics(request, player_slug):
     try:
         player = Player.objects.filter(slug__contains=player_slug, deleted=False)[0]
         leagues = PlayerTeam.objects.filter(player=player, deleted=False).values('teamLeague__league__name',
-                                                                                 'teamLeague__league__year')
+                                                                                 'teamLeague__league__year',
+                                                                                 'player__field')
 
         for league in leagues:
             player_team = PlayerTeam.objects.filter(player=player, deleted=False,
@@ -70,15 +71,54 @@ def player_statistics(request, player_slug):
                                             game__league__name=league['teamLeague__league__name'],
                                             game__league__year=league['teamLeague__league__year']).count()
 
-            league['scoring_goal_number'] = Goal.objects. \
-                filter(player=player, deleted=False, scoring_team__name=league['team'], penalty=False, own_goal=False,
-                       game__league__name=league['teamLeague__league__name'],
-                       game__league__year=league['teamLeague__league__year']).count()
-
-            league['scoring_penalty_goal_number'] = Goal.objects. \
-                filter(player=player, deleted=False, scoring_team__name=league['team'], penalty=True, own_goal=False,
-                       game__league__name=league['teamLeague__league__name'],
-                       game__league__year=league['teamLeague__league__year']).count()
+            if player.field == "FTB":
+                league['scoring_goal_number'] = Goal.objects. \
+                    filter(player=player, deleted=False, penalty=False, own_goal=False,
+                           game__league__name=league['teamLeague__league__name'], scoring_team__name=league['team'],
+                           game__league__year=league['teamLeague__league__year']).count()
+                league['scoring_penalty_goal_number'] = Goal.objects. \
+                    filter(player=player, deleted=False, scoring_team__name=league['team'], penalty=True, own_goal=False,
+                           game__league__name=league['teamLeague__league__name'],
+                           game__league__year=league['teamLeague__league__year']).count()
+                league['yellow_card_number'] = YellowCard.objects. \
+                    filter(player=player, deleted=False, team__name=league['team'],
+                           game__league__name=league['teamLeague__league__name'],
+                           game__league__year=league['teamLeague__league__year']).count()
+                league['red_card_number'] = RedCard.objects. \
+                    filter(player=player, deleted=False, team__name=league['team'],
+                           game__league__name=league['teamLeague__league__name'],
+                           game__league__year=league['teamLeague__league__year']).count()
+                league['assist_goal_number'] = AssistGoal.objects. \
+                    filter(player=player, deleted=False, goal__scoring_team__name=league['team'],
+                           goal__game__league__name=league['teamLeague__league__name'],
+                           goal__game__league__year=league['teamLeague__league__year']).count()
+            else:
+                league['throw1_number'] = Throw.objects.\
+                    filter(player=player, deleted=False, team__name=league['team'], score="1",
+                           game__league__name=league['teamLeague__league__name'],
+                           game__league__year=league['teamLeague__league__name']).count()
+                league['throw2_number'] = Throw.objects.\
+                    filter(player=player, deleted=False, team__name=league['team'], score="2",
+                           game__league__name=league['teamLeague__league__name'],
+                           game__league__year=league['teamLeague__league__name']).count()
+                league['throw3_number'] = Throw.objects. \
+                    filter(player=player, deleted=False, team__name=league['team'], score="3",
+                           game__league__name=league['teamLeague__league__name'],
+                           game__league__year=league['teamLeague__league__name']).count()
+                league['foul_number'] = Foul.objects. \
+                    filter(player=player, deleted=False, team__name=league['team'],
+                           game__league__name=league['teamLeague__league__name'],
+                           game__league__year=league['teamLeague__league__name']).count()
+                league['ribbond'] = Ribbond.objects. \
+                    filter(player=player, deleted=False, team__name=league['team'],
+                           game__league__name=league['teamLeague__league__name'],
+                           game__league__year=league['teamLeague__league__name']).count()
+                league['time'] = 0
+                for time in PlayerGame.objects.filter(player=player, deleted=False, team__name=league['team'],
+                                                      game__league__name=league['teamLeague__league__name'],
+                                                      game__league__year=league['teamLeague__league__name']).\
+                        values('time'):
+                    league['time'] = time + league['time']
 
         return Response(leagues)
     except IndexError:

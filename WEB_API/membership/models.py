@@ -47,6 +47,8 @@ class PlayerGame(models.Model):
     team = models.ForeignKey(Team, on_delete=CASCADE, verbose_name='تیم')
     fix = models.BooleanField(default=True, verbose_name='بازیکن ثابت')
 
+    time = models.IntegerField(default=0, verbose_name='مدت زمان بازی در تیم')
+
     created_date_time = models.DateTimeField(verbose_name='زمان ساخت')
     deleted = models.BooleanField(default=False, verbose_name='حذف شده')
 
