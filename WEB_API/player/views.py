@@ -28,8 +28,8 @@ def news_list(request, player_slug):
 def info(request, player_slug):
     try:
         player = Player.objects.filter(slug__contains=player_slug, deleted=False)
-        player_info = player.values('name', 'image_url', 'post__name', 'field', 'age', 'city', 'height',
-                                            'weight', 'teamNum', 'nationalityTeamNum', 'website')
+        player_info = player.values('name', 'image_url', 'post__name', 'field', 'age', 'birth_place', 'height',
+                                    'weight', 'teamNum', 'nationalityTeamNum', 'website')
         return Response(player_info[0])
     except (IndexError, AssertionError, OperationalError):
         return Response({})
