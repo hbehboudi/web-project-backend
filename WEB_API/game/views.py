@@ -174,7 +174,7 @@ def time_lines(request, game_slug):
         substitutes = Substitute.objects.filter(game=game, deleted=False).values('in_player__name', 'out_player__name',
                                                                                  'minute', 'second', 'team__name')
 
-        throws = Throw.objects.filter(game=game, deleted=False, penalty=False).values('minute', 'second',
+        throws = Throw.objects.filter(game=game, deleted=False).values('minute', 'second',
                                                                                       'team__name', 'score')
 
         send_offs = SendOff.objects.filter(game=game, deleted=False).values('minute', 'second',

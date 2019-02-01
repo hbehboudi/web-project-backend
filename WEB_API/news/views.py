@@ -1,5 +1,4 @@
-from datetime import timezone
-
+from django.utils import timezone
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
@@ -26,7 +25,7 @@ def comment_list(request):
     news = News.objects.filter(deleted=False, slug__contains=request.data['slug'])[0]
     if request.method == 'POST':
         comment = Comment(title=request.data['title'], text=request.data['text'],
-                          news=news)
+                          news=news, created_date_time=timezone.now())
         comment.save()
 
         return Response({})

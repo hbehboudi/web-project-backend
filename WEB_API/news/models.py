@@ -60,7 +60,7 @@ class Comment(models.Model):
     title = models.CharField(max_length=31, verbose_name='عنوان')
     text = models.CharField(max_length=255, verbose_name='متن')
 
-    created_date_time = models.DateTimeField(verbose_name='زمان ساخت', auto_now_add=True)
+    created_date_time = models.DateTimeField(verbose_name='زمان ساخت')
     deleted = models.BooleanField(default=False, verbose_name='حذف شده')
 
     class Meta:
