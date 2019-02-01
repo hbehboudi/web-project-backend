@@ -55,7 +55,7 @@ class News(models.Model):
 
 class Comment(models.Model):
     news = models.ForeignKey(News, on_delete=models.CASCADE, verbose_name='خبر')
-    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='کاربر', blank=True, null=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='کاربر')
 
     title = models.CharField(max_length=31, verbose_name='عنوان')
     text = models.CharField(max_length=255, verbose_name='متن')

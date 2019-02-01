@@ -1,6 +1,7 @@
 from django.utils import timezone
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from rest_framework.authtoken.models import Token
 
 from news.models import News, Comment
 
@@ -22,17 +23,24 @@ def info(request, news_slug):
 
 @api_view(['POST'])
 def create_comment(request):
-    news = News.objects.filter(deleted=False, slug__contains=request.data['slug'])[0]
-    if request.method == 'POST':
-        comment = Comment(title=request.data['title'], text=request.data['text'],
-                          news=news, created_date_time=timezone.now())
-        comment.save()
-
-        return Response({})
+    try:
+        news = News.objects.filter(deleted=False, slug__contains=request.data['slug'])[0]
+        user = Token.objects.filter(key__contains=request.data['token'])[0].user
+        if request.method == 'POST':
+            comment = Comment(title=request.data['title'], text=request.data['text'],
+                              news=news, created_date_time=timezone.now(), user=user)
+            comment.save()
+        return Response({"comment": "create"})
+    except IndexError:
+        return Response({"comment": "error"})
 
 
 @api_view()
 def comment_list(request, news_slug):
-    news = News.objects.filter(deleted=False, slug__contains=news_slug)[0]
-    comments = Comment.objects.filter(news=news, deleted=False).values('title', 'text', 'created_date_time', 'user')
-    return Response(comments)
+    try:
+        news = News.objects.filter(deleted=False, slug__contains=news_slug)[0]
+        comments = Comment.objects.filter(news=news, deleted=False).values('title', 'text', 'created_date_time',
+                                                                           'user__username')
+        return Response(comments)
+    except IndexError:
+        return Response({})

@@ -217,4 +217,3 @@ def like_check(request, team_slug):
         return Response({'like': 'True'})
     except (IndexError, AssertionError, OperationalError):
         return Response({'like': 'False'})
-
