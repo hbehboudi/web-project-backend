@@ -51,7 +51,7 @@ def league_list(request, league_slug):
     try:
         league = League.objects.filter(slug__contains=league_slug, deleted=False)
 
-        result = league.values('name', 'year')[0]
+        result = league.values('name', 'year', 'field')[0]
         league = league[0]
 
         result['teams'] = TeamLeague.objects.filter(league=league).values('team__name', 'team__field')
