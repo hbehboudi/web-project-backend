@@ -1,7 +1,7 @@
 from django.urls import path
 
 from team.views import members_list, info, slider_images, team_statistics, league_list, game_list, news_list_by_player, \
-    news_list_by_team, liking
+    news_list_by_team, liking, like_check
 
 urlpatterns = [
     path('<str:team_slug>/news/by-team/', news_list_by_team),
@@ -13,4 +13,5 @@ urlpatterns = [
     path('<str:team_slug>/leagues/', league_list),
     path('<str:team_slug>/games/', game_list),
     path('<str:team_slug>/like/', liking),
+    path('<str:team_slug>/like_check/', like_check),
 ]

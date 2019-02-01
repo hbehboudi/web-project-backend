@@ -206,3 +206,15 @@ def liking(request, team_slug):
                 return Response({'like': 'true'})
     except (IndexError, AssertionError, OperationalError):
         return Response({})
+
+
+@api_view()
+def like_check(request, team_slug):
+    try:
+        team = Team.objects.filter(slug__contains=team_slug, deleted=False)[0]
+        user_id = Token.objects.filter(key__contains=request.data['token'])[0].user_id
+        like = Like.objects.filter(user_id=user_id, team=team, deleted=False)[0]
+        return Response({'like': 'True'})
+    except (IndexError, AssertionError, OperationalError):
+        return Response({'like': 'False'})
+
