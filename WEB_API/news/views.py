@@ -20,8 +20,8 @@ def info(request, news_slug):
         return Response({})
 
 
-@api_view(['GET', 'POST'])
-def comment_list(request):
+@api_view(['POST'])
+def create_comment(request):
     news = News.objects.filter(deleted=False, slug__contains=request.data['slug'])[0]
     if request.method == 'POST':
         comment = Comment(title=request.data['title'], text=request.data['text'],
@@ -29,4 +29,10 @@ def comment_list(request):
         comment.save()
 
         return Response({})
-    return Response({"message": "Hello, world!"})
+
+
+@api_view()
+def comment_list(request, news_slug):
+    news = News.objects.filter(deleted=False, slug__contains=news_slug)[0]
+    comments = Comment.objects.filter(news=news, deleted=False).values('title', 'text', 'created_date_time', 'user')
+    return Response(comments)

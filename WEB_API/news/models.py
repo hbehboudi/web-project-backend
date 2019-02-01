@@ -67,7 +67,6 @@ class Comment(models.Model):
         verbose_name = 'کامنت'
         verbose_name_plural = 'کامنت ها'
         ordering = ('-created_date_time', 'title',)
-        unique_together = ('title',)
 
     def __str__(self):
         return self.title
