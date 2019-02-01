@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils.text import slugify
 
+from authentication.accounts.models import User
 from tag.models import Tag
 
 
@@ -50,3 +51,14 @@ class News(models.Model):
     def save(self, *args, **kwargs):
         self.slug = slugify(self.__str__(), allow_unicode=True)
         super(News, self).save(*args, **kwargs)
+
+
+class Comment(models.Model):
+    news = models.ForeignKey(News, on_delete=models.CASCADE, verbose_name='خبر')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='کاربر')
+
+    title = models.CharField(max_length=31, verbose_name='عنوان')
+    text = models.CharField(max_length=255, verbose_name='متن')
+
+    created_date_time = models.DateTimeField(verbose_name='زمان ساخت')
+    deleted = models.BooleanField(default=False, verbose_name='حذف شده')

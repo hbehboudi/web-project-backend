@@ -4,7 +4,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
 from game.models import Game, Goal
-from leagues.models import League, BestPlayer
+from leagues.models import League, BestPlayer, LeagueSliderImage
 from membership.models import TeamLeague
 from news.models import News
 
@@ -12,7 +12,7 @@ from news.models import News
 @api_view()
 def info(request, league_slug):
     try:
-        league = League.objects.filter(slug__contains=league_slug, deleted=False)[0]
+        league = League.objects.filter(slug__contains=league_slug, deleted=False)
         league_info = league.values('name', 'year', 'image_url', 'country', 'confederation', 'level', 'numberOfTeams',
                                      'bestTeam', 'establishedYear', 'website', 'field', 'active')
         return Response(league_info[0])
@@ -27,7 +27,7 @@ def newsList(request, league_slug):
         if num is None:
             num = 10
         league = League.objects.filter(slug__contains=league_slug, deleted=False)[0]
-        news = News.objects.filter(Q(title__contains=league.name) | Q(tags__title__contains=league_slug.name) |
+        news = News.objects.filter(Q(title__contains=league.name) | Q(tags__title__contains=league.name) |
                                    Q(text__contains=league.name) | Q(summary__contains=league.name))
 
         return Response(news.values('title', 'type__title', 'image_url', 'field',
@@ -40,7 +40,7 @@ def newsList(request, league_slug):
 def slider_images(request, league_slug):
     try:
         league = League.objects.filter(slug__contains=league_slug, deleted=False)[0]
-        sliders = league.objects.filter(league=league, deleted=False).values('title', 'image_url')
+        sliders = LeagueSliderImage.objects.filter(league=league, deleted=False).values('title', 'image_url')
         return Response(sliders)
     except IndexError:
         return Response({})
@@ -67,7 +67,7 @@ def league_list(request, league_slug):
             team['lose_number'] = Game.objects.filter(deleted=False, league=league).\
                 filter(Q(team1__name=team['team__name'], team_state1='L') |
                        Q(team2__name=team['team__name'], team_state2='L')).count()
-            if team['team__filed'] == "FTB":
+            if team['team__field'] == "FTB":
                 team['draw_number'] = Game.objects.filter(deleted=False, league=league).\
                     filter(Q(team1__name=team['team__name'], team_state1='D') |
                            Q(team2__name=team['team__name'], team_state2='D')).count()
@@ -83,20 +83,20 @@ def league_list(request, league_slug):
                 team['score'] = team['win_number'] * 3 + team['draw_number']
         return Response(result)
     except IndexError:
-        return Response({})
+        return Response({"error": 404})
 
 
 @api_view()
 def best_player_list(request, league_slug):
     try:
-        league = League.objects.filter(slug__contains=league_slug, deleted=False)
+        league = League.objects.filter(slug__contains=league_slug, deleted=False)[0]
         best_players = BestPlayer.objects.filter(league=league, deleted=False, ).values('player__name', 'title',
                                                                                         'player__post__name',
                                                                                         'player__slug',
                                                                                         'player__image_url')
         return Response(best_players)
     except IndexError:
-        return Response({})
+        return Response({"error": 404})
 
 
 @api_view()
@@ -104,12 +104,12 @@ def game_list(request, league_slug):
     try:
         level = request.GET.get('level')
 
-        league = League.objects.filter(slug__contains=league_slug, deleted=False)
+        league = League.objects.filter(slug__contains=league_slug, deleted=False)[0]
         games = Game.objects.filter(league=league, deleted=False)
 
-        if level is None:
+        if level:
             games = games.filter(level=level)
-        if games[0].field == "FTB":
+        if league.field == "FTB":
             games = games.values('team1__name', 'team2__name', 'team1__slug', 'team2__slug', 'slug',
                                  'team1__image_url', 'team2__image_url', 'goals1', 'goals2')
         else:
@@ -117,4 +117,4 @@ def game_list(request, league_slug):
                                  'team1__image_url', 'team2__image_url', 'all_score1', 'all_score2')
         return Response(games)
     except IndexError:
-        return Response({})
+        return Response({"error": 404})
