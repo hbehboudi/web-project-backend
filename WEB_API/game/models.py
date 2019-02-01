@@ -113,7 +113,7 @@ class Game(models.Model):
     score3_team2 = models.IntegerField(blank=True, null=True, verbose_name='پرتاب های ۳ امتیازی تیم ۲',
                                        help_text='برای بازی بسکتبال')
     ribbond1 = models.IntegerField(blank=True, null=True, verbose_name='ریباند تیم ۱', help_text='برای بازی بسکتبال')
-    ribbond2 = models.IntegerField(blank=True, null=True, verbose_name='ریباند تیم ۱', help_text='برای بازی بسکتبال')
+    ribbond2 = models.IntegerField(blank=True, null=True, verbose_name='ریباند تیم ۲', help_text='برای بازی بسکتبال')
     style1 = models.IntegerField(blank=True, null=True, verbose_name='استیل های تیم ۱', help_text='برای بازی بسکتبال')
     style2 = models.IntegerField(blank=True, null=True, verbose_name='استیل های تیم ۲', help_text='برای بازی بسکتبال')
     out1 = models.IntegerField(blank=True, null=True, verbose_name='اخراج های تیم ۱', help_text='برای بازی بسکتبال')
@@ -145,8 +145,9 @@ class Game(models.Model):
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.__str__(), allow_unicode=True)
-        self.all_score1 = 3 * self.score3_team1 + 2 * self.score2_team1 + self.score1_team1
-        self.all_score2 = 3 * self.score3_team2 + 2 * self.score2_team2 + self.score1_team2
+        if self.field == 'BSK':
+            self.all_score1 = 3 * self.score3_team1 + 2 * self.score2_team1 + self.score1_team1
+            self.all_score2 = 3 * self.score3_team2 + 2 * self.score2_team2 + self.score1_team2
         super(Game, self).save(*args, **kwargs)
 
 
