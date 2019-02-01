@@ -51,6 +51,7 @@ def player_statistics(request, player_slug):
         player = Player.objects.filter(slug__contains=player_slug, deleted=False)[0]
         leagues = PlayerTeam.objects.filter(player=player, deleted=False).values('teamLeague__league__name',
                                                                                  'teamLeague__league__year',
+                                                                                 'teamLeague__league__slug',
                                                                                  'player__field')
 
         for league in leagues:
