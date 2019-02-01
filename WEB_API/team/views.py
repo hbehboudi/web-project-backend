@@ -1,11 +1,13 @@
 from django.db import OperationalError
 from django.db.models import Q
+from django.utils import timezone
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from rest_framework.authtoken.models import Token
 
 from game.models import Game, Goal
 from news.models import News
-from team.models import Team, TeamSliderImage
+from team.models import Team, TeamSliderImage, Like
 from membership.models import PlayerTeam, TeamLeague
 
 
@@ -180,4 +182,27 @@ def game_list(request, team_slug):
 
         return Response(games)
     except IndexError:
+        return Response({})
+
+
+@api_view()
+def liking(request, team_slug):
+    try:
+        team = Team.objects.filter(slug__contains=team_slug, deleted=False)[0]
+        user_id = Token.objects.filter(key__contains=request.data['token'])[0].user_id
+        try:
+            like = Like.objects.filter(user_id=user_id, team=team, deleted=False)[0]
+            like.deleted = True
+            like.save()
+            return Response({'like': 'false'})
+        except IndexError:
+            try:
+                like = Like.objects.filter(user_id=user_id, team=team, deleted=True)[0]
+                like.deleted = False
+                like.save()
+                return Response({'like': 'true'})
+            except IndexError:
+                Like(user_id=user_id, team=team, created_date_time=timezone.now()).save()
+                return Response({'like': 'true'})
+    except (IndexError, AssertionError, OperationalError):
         return Response({})

@@ -69,7 +69,7 @@ class Like(models.Model):
         return "{} {}".format(self.team, self.user)
 
     class Meta:
-        verbose_name = 'تصویر اسلایدر تیم'
+        verbose_name = 'علاقه مندی'
         unique_together = ('user', 'team',)
         ordering = ('-created_date_time', 'team')
-        verbose_name_plural = 'تصاویر اسلایدر تیم ها'
+        verbose_name_plural = 'علاقه مندی ها'
