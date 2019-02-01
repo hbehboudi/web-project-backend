@@ -296,7 +296,7 @@ class Throw(models.Model):
     player = models.ForeignKey(Player, on_delete=CASCADE, verbose_name='بازیکن')
     game = models.ForeignKey(Game, on_delete=CASCADE, verbose_name='بازی')
     team = models.ForeignKey(Team, on_delete=CASCADE, verbose_name='تیم')
-    score = models.CharField(choices=SCORE, verbose_name='نوع پرتاب')
+    score = models.CharField(max_length=1, choices=SCORE, verbose_name='نوع پرتاب')
     minute = models.IntegerField(verbose_name='دقیقه')
     second = models.IntegerField(verbose_name='ثانیه')
 
