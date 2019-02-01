@@ -114,7 +114,8 @@ def league_list(request, team_slug):
     try:
         team = Team.objects.filter(slug__contains=team_slug, deleted=False)[0]
         leagues = TeamLeague.objects.filter(team=team, league__active=True, deleted=False).values('league__name',
-                                                                                                  'league__year')
+                                                                                                  'league__year',
+                                                                                                  'league__field')
         for league in leagues:
             league['teams'] = TeamLeague.objects. \
                 filter(league__name=league['league__name'], league__year=league['league__year']).values('team__name',
@@ -141,6 +142,15 @@ def league_list(request, team_slug):
                                Q(team2__name=team['team__name'], team_state2='D')).count()
 
                     team['score'] = team['win_number'] * 3 + team['draw_number']
+
+            if league['league__field'] == 'FTB':
+                league['teams'] = sorted(league['teams'], key=lambda i: i['score'], reverse=True)
+            else:
+                league['teams'] = sorted(league['teams'], key=lambda i: i['win_number'], reverse=True)
+            counter = 0
+            for team in league['teams']:
+                counter += 1
+                team['rank'] = counter
         return Response(leagues)
     except IndexError:
         return Response({'h': 2})
