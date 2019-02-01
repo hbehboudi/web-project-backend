@@ -23,11 +23,16 @@ def info(request, league_slug):
 @api_view()
 def newsList(request, league_slug):
     try:
+        num = request.GET.get('n')
+        if num is None:
+            num = 10
         league = League.objects.filter(slug__contains=league_slug, deleted=False)[0]
-        tag_titles = league.tags.values_list('title')
-        news = News.objects.filter(tags__title__in=tag_titles, deleted=False)
-        return Response(news.values('title', 'category', 'image_url', 'created_date_time', 'slug'))
-    except IndexError:
+        news = News.objects.filter(Q(title__contains=league.name) | Q(tags__title__contains=league_slug.name) |
+                                   Q(text__contains=league.name) | Q(summary__contains=league.name))
+
+        return Response(news.values('title', 'category', 'image_url', 'field',
+                                    'created_date_time', 'slug')[0: int(num)])
+    except (IndexError, AssertionError, OperationalError):
         return Response({})
 
 
@@ -49,7 +54,7 @@ def league_list(request, league_slug):
         result = league.values('name', 'year')[0]
         league = league[0]
 
-        result['teams'] = TeamLeague.objects.filter(league=league).values('team__name')
+        result['teams'] = TeamLeague.objects.filter(league=league).values('team__name', 'team__field')
 
         for team in result['teams']:
             team['game_number'] = Game.objects.filter(deleted=False, league=league).\
@@ -62,20 +67,20 @@ def league_list(request, league_slug):
             team['lose_number'] = Game.objects.filter(deleted=False, league=league).\
                 filter(Q(team1__name=team['team__name'], team_state1='L') |
                        Q(team2__name=team['team__name'], team_state2='L')).count()
+            if team['team__filed'] == "FTB":
+                team['draw_number'] = Game.objects.filter(deleted=False, league=league).\
+                    filter(Q(team1__name=team['team__name'], team_state1='D') |
+                           Q(team2__name=team['team__name'], team_state2='D')).count()
 
-            team['draw_number'] = Game.objects.filter(deleted=False, league=league).\
-                filter(Q(team1__name=team['team__name'], team_state1='D') |
-                       Q(team2__name=team['team__name'], team_state2='D')).count()
+                team['scoring_goal_number'] = Goal.objects.\
+                    filter(deleted=False, game__league=league, scoring_team__name=team['team__name']).count()
 
-            team['scoring_goal_number'] = Goal.objects.\
-                filter(deleted=False, game__league=league, scoring_team__name=team['team__name']).count()
+                team['receiving_goal_number'] = Goal.objects.\
+                    filter(deleted=False, game__league=league, receiving_team__name=team['team__name']).count()
 
-            team['receiving_goal_number'] = Goal.objects.\
-                filter(deleted=False, game__league=league, receiving_team__name=team['team__name']).count()
+                team['difference'] = team['scoring_goal_number'] - team['receiving_goal_number']
 
-            team['difference'] = team['scoring_goal_number'] - team['receiving_goal_number']
-
-            team['score'] = team['win_number'] * 3 + team['draw_number']
+                team['score'] = team['win_number'] * 3 + team['draw_number']
         return Response(result)
     except IndexError:
         return Response({})
@@ -104,9 +109,12 @@ def game_list(request, league_slug):
 
         if level is None:
             games = games.filter(level=level)
-
-        games = games.values('team1__name', 'team2__name', 'team1__slug', 'team2__slug', 'slug', 'team1__image_url',
-                             'team2__image_url', 'goals1', 'goals2')
+        if games[0].field == "FTB":
+            games = games.values('team1__name', 'team2__name', 'team1__slug', 'team2__slug', 'slug',
+                                 'team1__image_url', 'team2__image_url', 'goals1', 'goals2')
+        else:
+            games = games.values('team1__name', 'team2__name', 'team1__slug', 'team2__slug', 'slug',
+                                 'team1__image_url', 'team2__image_url', 'all_score1', 'all_score2')
         return Response(games)
     except IndexError:
         return Response({})

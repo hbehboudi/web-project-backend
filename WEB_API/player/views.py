@@ -3,7 +3,7 @@ from django.db.models import Q
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-from game.models import Game, Substitute, Goal, Throw, Foul, Ribbond, YellowCard, RedCard, AssistGoal
+from game.models import Substitute, Goal, Throw, Foul, Ribbond, YellowCard, RedCard, AssistGoal
 from membership.models import PlayerTeam, PlayerGame
 from news.models import News
 from player.models import Player, PlayerSliderImage
@@ -77,8 +77,8 @@ def player_statistics(request, player_slug):
                            game__league__name=league['teamLeague__league__name'], scoring_team__name=league['team'],
                            game__league__year=league['teamLeague__league__year']).count()
                 league['scoring_penalty_goal_number'] = Goal.objects. \
-                    filter(player=player, deleted=False, scoring_team__name=league['team'], penalty=True, own_goal=False,
-                           game__league__name=league['teamLeague__league__name'],
+                    filter(player=player, deleted=False, scoring_team__name=league['team'], penalty=True,
+                           own_goal=False, game__league__name=league['teamLeague__league__name'],
                            game__league__year=league['teamLeague__league__year']).count()
                 league['yellow_card_number'] = YellowCard.objects. \
                     filter(player=player, deleted=False, team__name=league['team'],
