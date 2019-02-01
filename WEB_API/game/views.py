@@ -68,15 +68,15 @@ def player_list(request, game_slug):
         players = {'team1': game.team1.name, 'team_slug_1': game.team1.slug, 'team_image_url1': game.team1.image_url,
                    'team2': game.team2.name, 'team_slug_2': game.team2.slug, 'team_image_url2': game.team2.image_url,
                    'fix_players1': PlayerGame.objects.filter(game=game, team=game.team1, fix=True, deleted=False).
-                       values('player__slug', 'player__name', 'player__post__name'),
+                       values('player__slug', 'player__name', 'player__post__short'),
                    'fix_players2': PlayerGame.objects.filter(game=game, team=game.team2, fix=True, deleted=False).
-                       values('player__slug', 'player__name', 'player__post__name'),
+                       values('player__slug', 'player__name', 'player__post__short'),
                    'substitute_player1': PlayerGame.objects.filter(game=game, team=game.team1, 
                                                                    fix=False, deleted=False).
-                       values('player__slug', 'player__name', 'player__post__name'),
+                       values('player__slug', 'player__name', 'player__post__short'),
                    'substitute_player2': PlayerGame.objects.filter(game=game, team=game.team2,
                                                                    fix=False, deleted=False).
-                       values('player__slug', 'player__name', 'player__post__name'),
+                       values('player__slug', 'player__name', 'player__post__short'),
                    }
         for player in players['fix_players1']:
             try:

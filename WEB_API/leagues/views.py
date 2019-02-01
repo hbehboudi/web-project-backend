@@ -111,10 +111,8 @@ def league_list(request, league_slug):
 def best_player_list(request, league_slug):
     try:
         league = League.objects.filter(slug__contains=league_slug, deleted=False)[0]
-        best_players = BestPlayer.objects.filter(league=league, deleted=False, ).values('player__name', 'title',
-                                                                                        'player__post__name',
-                                                                                        'player__slug',
-                                                                                        'player__image_url')
+        best_players = BestPlayer.objects.filter(league=league, deleted=False, ).\
+            values('player__name', 'title', 'player__post__name', 'player__slug', 'player__image_url')
         return Response(best_players)
     except IndexError:
         return Response({"error": 404})

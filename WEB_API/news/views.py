@@ -1,7 +1,9 @@
+from datetime import timezone
+
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-from news.models import News
+from news.models import News, Comment
 
 
 @api_view()
@@ -17,3 +19,15 @@ def info(request, news_slug):
         return Response(result)
     except IndexError:
         return Response({})
+
+
+@api_view(['GET', 'POST'])
+def comment_list(request):
+    news = News.objects.filter(deleted=False, slug__contains=request.data['slug'])[0]
+    if request.method == 'POST':
+        comment = Comment(title=request.data['title'], text=request.data['text'],
+                          created_date_time=timezone.now(), news=news, user=request.user)
+        comment.save()
+
+        return Response({"message": "Got some data!", "data": request.data})
+    return Response({"message": "Hello, world!"})
