@@ -25,7 +25,8 @@ def info(request, news_slug):
 def create_comment(request):
     try:
         news = News.objects.filter(deleted=False, slug__contains=request.data['slug'])[0]
-        user = Token.objects.filter(key__contains=request.data['token'])[0].user
+        # user = Token.objects.filter(key__contains=request.data['token'])[0].user
+        user = Token.objects.get(key=request.data['token'])[0].user
         if request.method == 'POST':
             comment = Comment(title=request.data['title'], text=request.data['text'],
                               news=news, created_date_time=timezone.now(), user=user)

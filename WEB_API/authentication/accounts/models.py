@@ -158,8 +158,8 @@ class UserProfile(base_models.TimeStampedModel, Verification):
     objects = UserProfileRegistrationManager()
 
     class Meta:
-        verbose_name = u'user profile'
-        verbose_name_plural = u'user profiles'
+        verbose_name = u'نمایه'
+        verbose_name_plural = u'نمایه ها'
 
     def __str__(self):
         return str(self.user)
