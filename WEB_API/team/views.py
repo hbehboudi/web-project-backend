@@ -185,7 +185,7 @@ def game_list(request, team_slug):
         return Response({})
 
 
-@api_view()
+@api_view([])
 def liking(request, team_slug):
     try:
         team = Team.objects.filter(slug__contains=team_slug, deleted=False)[0]
