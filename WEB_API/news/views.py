@@ -41,7 +41,8 @@ def comment_list(request, news_slug):
     try:
         news = News.objects.filter(deleted=False, slug__contains=news_slug)[0]
         comments = Comment.objects.filter(news=news, deleted=False).values('title', 'text', 'created_date_time',
-                                                                           'user__username')
+                                                                           'user__username').\
+            order_by('created_date_time')
         return Response(comments)
     except IndexError:
         return Response({})
