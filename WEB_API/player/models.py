@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils.text import slugify
 
+from authentication.accounts.models import User
 from news.models import Tag
 
 
@@ -78,3 +79,20 @@ class PlayerSliderImage(models.Model):
         verbose_name = 'تصویر اسلایدر بازیکن'
         ordering = ('-created_date_time', 'title')
         verbose_name_plural = 'تصاویر اسلایدر بازیکن'
+
+
+class LikePlayer(models.Model):
+    user = models.ForeignKey(User, verbose_name='کاربر', on_delete=models.CASCADE)
+    player = models.ForeignKey(Player, verbose_name='بازیکن', on_delete=models.CASCADE)
+
+    created_date_time = models.DateTimeField(verbose_name='زمان ساخت')
+    deleted = models.BooleanField(default=False, verbose_name='حذف شده')
+
+    def __str__(self):
+        return "{} {}".format(self.player, self.user)
+
+    class Meta:
+        verbose_name = 'علاقه مندی'
+        unique_together = ('user', 'player',)
+        ordering = ('-created_date_time', 'player')
+        verbose_name_plural = 'علاقه مندی ها'

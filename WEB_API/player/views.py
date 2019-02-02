@@ -1,12 +1,14 @@
 from django.db import OperationalError
 from django.db.models import Q
+from django.utils import timezone
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from rest_framework.authtoken.models import Token
 
 from game.models import Substitute, Goal, Throw, Foul, Ribbond, YellowCard, RedCard, AssistGoal, AssistThrow
 from membership.models import PlayerTeam, PlayerGame
 from news.models import News
-from player.models import Player, PlayerSliderImage
+from player.models import Player, PlayerSliderImage, LikePlayer
 
 
 @api_view()
@@ -132,3 +134,37 @@ def player_statistics(request, player_slug):
         return Response(leagues)
     except IndexError:
         return Response({})
+
+
+@api_view()
+def liking(request, player_slug):
+    try:
+        player = Player.objects.filter(slug__contains=player_slug, deleted=False)[0]
+        user_id = Token.objects.filter(key__contains=request.data['token'])[0].user_id
+        try:
+            like = LikePlayer.objects.filter(user_id=user_id, player=player, deleted=False)[0]
+            like.deleted = True
+            like.save()
+            return Response({'like': 'false'})
+        except IndexError:
+            try:
+                like = LikePlayer.objects.filter(user_id=user_id, player=player, deleted=True)[0]
+                like.deleted = False
+                like.save()
+                return Response({'like': 'true'})
+            except IndexError:
+                LikePlayer(user_id=user_id, player=player, created_date_time=timezone.now()).save()
+                return Response({'like': 'true'})
+    except (IndexError, AssertionError, OperationalError):
+        return Response({})
+
+
+@api_view()
+def like_check(request, player_slug):
+    try:
+        player = Player.objects.filter(slug__contains=player_slug, deleted=False)[0]
+        user_id = Token.objects.filter(key__contains=request.data['token'])[0].user_id
+        like = LikePlayer.objects.filter(user_id=user_id, player=player, deleted=False)[0]
+        return Response({'like': 'True'})
+    except (IndexError, AssertionError, OperationalError):
+        return Response({'like': 'False'})

@@ -1,10 +1,12 @@
 from django.db import OperationalError
 from django.db.models import Q
+from django.utils import timezone
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from rest_framework.authtoken.models import Token
 
 from game.models import Game, Goal, Throw, Ribbond, Foul
-from leagues.models import League, BestPlayer, LeagueSliderImage
+from leagues.models import League, BestPlayer, LeagueSliderImage, LikeLeague
 from membership.models import TeamLeague
 from news.models import News
 
@@ -137,3 +139,37 @@ def game_list(request, league_slug):
         return Response(games)
     except IndexError:
         return Response({"error": 404})
+
+
+@api_view()
+def liking(request, league_slug):
+    try:
+        league = League.objects.filter(slug__contains=league_slug, deleted=False)[0]
+        user_id = Token.objects.filter(key__contains=request.data['token'])[0].user_id
+        try:
+            like = LikeLeague.objects.filter(user_id=user_id, league=league, deleted=False)[0]
+            like.deleted = True
+            like.save()
+            return Response({'like': 'false'})
+        except IndexError:
+            try:
+                like = LikeLeague.objects.filter(user_id=user_id, league=league, deleted=True)[0]
+                like.deleted = False
+                like.save()
+                return Response({'like': 'true'})
+            except IndexError:
+                LikeLeague(user_id=user_id, league=league, created_date_time=timezone.now()).save()
+                return Response({'like': 'true'})
+    except (IndexError, AssertionError, OperationalError):
+        return Response({})
+
+
+@api_view()
+def like_check(request, league_slug):
+    try:
+        league = League.objects.filter(slug__contains=league_slug, deleted=False)[0]
+        user_id = Token.objects.filter(key__contains=request.data['token'])[0].user_id
+        like = LikeLeague.objects.filter(user_id=user_id, league=league, deleted=False)[0]
+        return Response({'like': 'True'})
+    except (IndexError, AssertionError, OperationalError):
+        return Response({'like': 'False'})

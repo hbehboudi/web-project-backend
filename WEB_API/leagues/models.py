@@ -1,8 +1,7 @@
-import uuid
-
 from django.db import models
 from django.utils.text import slugify
 
+from authentication.accounts.models import User
 from news.models import News
 from player.models import Player
 from tag.models import Tag
@@ -118,3 +117,20 @@ class BestPlayer(models.Model):
         verbose_name = 'برترین بازیکن'
         ordering = ('-created_date_time', 'player')
         verbose_name_plural = 'برترین بازیکنان'
+
+
+class LikeLeague(models.Model):
+    user = models.ForeignKey(User, verbose_name='کاربر', on_delete=models.CASCADE)
+    league = models.ForeignKey(League, verbose_name='لیگ', on_delete=models.CASCADE)
+
+    created_date_time = models.DateTimeField(verbose_name='زمان ساخت')
+    deleted = models.BooleanField(default=False, verbose_name='حذف شده')
+
+    def __str__(self):
+        return "{} {}".format(self.league, self.user)
+
+    class Meta:
+        verbose_name = 'علاقه مندی'
+        unique_together = ('user', 'league',)
+        ordering = ('-created_date_time', 'league')
+        verbose_name_plural = 'علاقه مندی ها'

@@ -10,4 +10,6 @@ urlpatterns = [
     path('<str:league_slug>/statistics/', views.league_list),
     path('<str:league_slug>/best_players/', views.best_player_list),
     path('<str:league_slug>/games/', views.game_list),
+    path('<str:league_slug>/like/', views.liking),
+    path('<str:league_slug>/like_check/', views.like_check),
 ]
