@@ -181,12 +181,14 @@ def game_list(request):
         football_games = Game.objects.filter(game_date__gte=timezone.now() - datetime.timedelta(days=1), field='FTB',
                                              game_date__lte=timezone.now() + datetime.timedelta(days=1), deleted=False)\
             .values('team1__name', 'team2__name', 'team1__image_url', 'team2__image_url', 'goals1', 'goals2',
-                    'full_time', 'game_date', 'league__name', 'league__year', 'field', 'team_state1', 'team_state2')
+                    'full_time', 'game_date', 'league__name', 'league__year', 'field', 'team_state1', 'team_state2',
+                    'slug')
         basketball_games = Game.objects.filter(game_date__gte=timezone.now() - datetime.timedelta(days=1),
                                                game_date__lte=timezone.now() + datetime.timedelta(days=1),
                                                field='BSK', deleted=False).\
             values('team1__name', 'team2__name', 'team1__image_url', 'team2__image_url', 'all_score1', 'all_score2',
-                   'full_time', 'game_date', 'league__name', 'league__year', 'field', 'team_state1', 'team_state2')
+                   'full_time', 'game_date', 'league__name', 'league__year', 'field', 'team_state1', 'team_state2',
+                   'slug')
         result = []
         for game in football_games:
             result.append(game)
