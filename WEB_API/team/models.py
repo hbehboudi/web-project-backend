@@ -58,7 +58,7 @@ class TeamSliderImage(models.Model):
         verbose_name_plural = 'تصاویر اسلایدر تیم ها'
 
 
-class Like(models.Model):
+class LikeTeam(models.Model):
     user = models.ForeignKey(User, verbose_name='کاربر', on_delete=models.CASCADE)
     team = models.ForeignKey(Team, verbose_name='تیم', on_delete=models.CASCADE)
 

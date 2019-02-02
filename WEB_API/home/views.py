@@ -1,8 +1,10 @@
+from django.core.checks import Tags
 from django.db import OperationalError
 from django.db.models import Q
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 import datetime
+from rest_framework.authtoken.models import Token
 
 from game.models import Game
 from home.models import SliderImage
@@ -10,6 +12,8 @@ from leagues.models import League
 from membership.models import TeamLeague
 from news.models import News
 from django.utils import timezone
+
+from team.models import LikeTeam
 
 
 @api_view()
@@ -21,6 +25,50 @@ def football_news_list(request):
         football_news = News.objects.all().filter(deleted=False, field='FTB')[0: int(num)].\
             values('title', 'summary', 'text', 'type__title', 'image_url', 'field', 'slug', 'created_date_time')
         return Response(football_news)
+    except (IndexError, AssertionError, OperationalError):
+        return Response({})
+
+
+@api_view()
+def like_football_news_list(request):
+    try:
+        num = request.GET.get('n')
+        if num is None:
+            num = 10
+        user_id = Token.objects.filter(key__contains=request.data['token'])[0].user_id
+        teams = LikeTeam.objects.filter(deleted=False, user_id=user_id).values('team__name')
+        result = []
+        for team in teams:
+            for news in News.objects.filter(deleted=False, field='FTB').\
+                    filter(Q(title__contains=team['team__name']) |
+                           Q(tags__title__contains=team['team__name']) |
+                           Q(summary__contains=team['team__name']) |
+                           Q(text__contains=team['team__name'])).\
+                    values('title', 'type__title', 'image_url', 'field', 'created_date_time', 'slug'):
+                result.append(news)
+        return Response(result[0: num])
+    except (IndexError, AssertionError, OperationalError):
+        return Response({})
+
+
+@api_view()
+def like_basketball_news_list(request):
+    try:
+        num = request.GET.get('n')
+        if num is None:
+            num = 10
+        user_id = Token.objects.filter(key__contains=request.data['token'])[0].user_id
+        teams = LikeTeam.objects.filter(deleted=False, user_id=user_id).values('team__name')
+        result = []
+        for team in teams:
+            for news in News.objects.filter(deleted=False, field='BSK').\
+                    filter(Q(title__contains=team['team__name']) |
+                           Q(tags__title__contains=team['team__name']) |
+                           Q(summary__contains=team['team__name']) |
+                           Q(text__contains=team['team__name'])).\
+                    values('title', 'type__title', 'image_url', 'field', 'created_date_time', 'slug'):
+                result.append(news)
+        return Response(result[0: num])
     except (IndexError, AssertionError, OperationalError):
         return Response({})
 

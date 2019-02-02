@@ -7,7 +7,7 @@ from rest_framework.authtoken.models import Token
 
 from game.models import Game, Goal
 from news.models import News
-from team.models import Team, TeamSliderImage, Like
+from team.models import Team, TeamSliderImage, LikeTeam
 from membership.models import PlayerTeam, TeamLeague
 
 
@@ -191,18 +191,18 @@ def liking(request, team_slug):
         team = Team.objects.filter(slug__contains=team_slug, deleted=False)[0]
         user_id = Token.objects.filter(key__contains=request.data['token'])[0].user_id
         try:
-            like = Like.objects.filter(user_id=user_id, team=team, deleted=False)[0]
+            like = LikeTeam.objects.filter(user_id=user_id, team=team, deleted=False)[0]
             like.deleted = True
             like.save()
             return Response({'like': 'false'})
         except IndexError:
             try:
-                like = Like.objects.filter(user_id=user_id, team=team, deleted=True)[0]
+                like = LikeTeam.objects.filter(user_id=user_id, team=team, deleted=True)[0]
                 like.deleted = False
                 like.save()
                 return Response({'like': 'true'})
             except IndexError:
-                Like(user_id=user_id, team=team, created_date_time=timezone.now()).save()
+                LikeTeam(user_id=user_id, team=team, created_date_time=timezone.now()).save()
                 return Response({'like': 'true'})
     except (IndexError, AssertionError, OperationalError):
         return Response({})
@@ -213,7 +213,7 @@ def like_check(request, team_slug):
     try:
         team = Team.objects.filter(slug__contains=team_slug, deleted=False)[0]
         user_id = Token.objects.filter(key__contains=request.data['token'])[0].user_id
-        like = Like.objects.filter(user_id=user_id, team=team, deleted=False)[0]
+        like = LikeTeam.objects.filter(user_id=user_id, team=team, deleted=False)[0]
         return Response({'like': 'True'})
     except (IndexError, AssertionError, OperationalError):
         return Response({'like': 'False'})
